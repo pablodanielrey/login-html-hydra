@@ -3,7 +3,4 @@ from . import bp, config
 
 @bp.route('/')
 def index():
-    """
-    Pagina de login
-    """
-    return render_template('login.html', version=config.version)
+    return render_template('index.html', version=config.version)
