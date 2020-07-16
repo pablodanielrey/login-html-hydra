@@ -1,2 +1,2 @@
 #!/bin/bash
-pip install -e .
+pip install --trusted-host pypi.econo.unlp.edu.ar -e .

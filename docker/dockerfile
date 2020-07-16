@@ -1,0 +1,6 @@
+FROM python:3.8
+
+COPY pip.conf /etc/
+
+WORKDIR /src
+CMD /bin/bash
