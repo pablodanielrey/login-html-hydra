@@ -1,0 +1,47 @@
+version: "3.5"
+services:
+  db_hydra:
+    image: postgres
+    ports:
+      - 5432:5432/tcp
+    volumes:
+      - data-volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: hydra
+      POSTGRES_USER: hydra
+      POSTGRES_PASSWORD: hydra123456789
+    network_mode: "host"
+
+  hydra:
+    image: oryd/hydra:v1.5
+    depends_on:
+      - "db_hydra"
+    ports:
+      - 4444:4444/tcp
+      - 4445:4445/tcp
+    command:
+      serve all --dangerous-force-http
+    environment:
+      SYSTEM_SECRET: algoresecreto
+      DATABASE_URL: postgres://hydra:hydra123456789@192.168.11.2:5432/hydra?sslmode=disable
+      OAUTH2_ISSUER_URL: http://oidc:4444
+      urls.self.issuer: http://oidc:4444
+      OAUTH2_LOGIN_URL: http://localhost:10005/login/
+      OAUTH2_CONSENT_URL: http://localhost:10005/consent/
+      OAUTH2_CONSENT_PROVIDER: http://localhost:10005/consent/
+      OAUTH2_ERROR_URL: http://localhost:10005/oauth_error
+      LOGOUT_REDIRECT_URL: http://localhost:10005
+      OAUTH2_LOGOUT_REDIRECT_URL: http://localhost:10005
+      HTTPS_ALLOW_TERMINATION_FROM: 0.0.0.0/0
+      key serve.tls.allow_termination_from: 0.0.0.0/0
+      ADMIN_PORT: 4445
+      ADMIN_HOST: 0.0.0.0
+      PUBLIC_PORT: 4444
+      PUBLIC_HOST: 0.0.0.0
+      serve.public.host: 0.0.0.0
+      serve.public.port: 4444
+      LOG_LEVEL:  debug
+    network_mode: "host"
+
+volumes:
+  data-volume:
