@@ -8,7 +8,7 @@ import logging
 import requests
 import datetime
 
-class HydraModel:
+class HydraApi:
 
     def __init__(self, hydra_api, verify=False):
         self.verify = verify

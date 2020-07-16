@@ -8,7 +8,7 @@ HYDRA_ADMIN_URL = os.environ.get('HYDRA_ADMIN_URL')
 VERIFY_HTTPS = bool(int(os.environ.get('VERIFY_HTTPS',0)))
 
 from .LoginHydraModel import LoginHydraModel
-from .HydraModel import HydraModel
+from .HydraApi import HydraApi
 
 hydraModel = HydraModel(HYDRA_ADMIN_URL, VERIFY_HTTPS)
 loginModel = LoginModel()
