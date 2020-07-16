@@ -18,6 +18,7 @@ setup(name='login-html-hydra',
           packages=find_packages(exclude=['contrib', 'docs', 'test*']),
           install_requires=[
                             #'gunicorn',
+                            'hydra-api',
                             'requests',
                             'Flask',
                             'flask-wtf'
