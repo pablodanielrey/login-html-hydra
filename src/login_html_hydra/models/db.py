@@ -1,7 +1,8 @@
-import os
 import contextlib
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from login_html_hydra.config import UserEnv, LoginEnv
 
 @contextlib.contextmanager
 def open_session(dbhost, dbport, dbname, dbuser, dbpassword, echo=True,):
@@ -18,18 +19,18 @@ def open_session(dbhost, dbport, dbname, dbuser, dbpassword, echo=True,):
 
 @contextlib.contextmanager
 def open_users_session():
-    dbuser = os.environ['USERS_DB_USER'],
-    dbpassword = os.environ['USERS_DB_PASSWORD'],
-    dbhost = os.environ['USERS_DB_HOST'],
-    dbport = os.environ.get('USERS_DB_PORT', 5432),
-    dbname = os.environ['USERS_DB_NAME']
+    dbuser = UserEnv.DB_USER,
+    dbpassword = UserEnv.DB_PASSWORD,
+    dbhost = UserEnv.DB_HOST
+    dbport = UserEnv.DB_PORT
+    dbname = UserEnv.DB_NAME
     yield open_session(dbhost, dbport, dbname, dbuser, dbpassword)
 
 @contextlib.contextmanager
 def open_login_session():
-    dbuser = os.environ['LOGIN_DB_USER'],
-    dbpassword = os.environ['LOGIN_DB_PASSWORD'],
-    dbhost = os.environ['LOGIN_DB_HOST'],
-    dbport = os.environ.get('LOGIN_DB_PORT', 5432),
-    dbname = os.environ['LOGIN_DB_NAME']
+    dbuser = LoginEnv.DB_USER,
+    dbpassword = LoginEnv.DB_PASSWORD,
+    dbhost = LoginEnv.DB_HOST
+    dbport = LoginEnv.DB_PORT
+    dbname = LoginEnv.DB_NAME
     yield open_session(dbhost, dbport, dbname, dbuser, dbpassword)
