@@ -7,3 +7,6 @@ webapp.register_blueprint(index_bp)
 
 from .web.login import bp as login_bp
 webapp.register_blueprint(login_bp, url_prefix='/login')
+
+from .web.change_credentials import bp as change_credentials_bp
+webapp.register_blueprint(change_credentials_bp, url_prefix='/change')
