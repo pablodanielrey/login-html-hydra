@@ -8,7 +8,6 @@ import logging
 import requests
 import datetime
 
-
 class HydraModel:
 
     def __init__(self, hydra_api, verify=False):
@@ -109,7 +108,7 @@ class HydraModel:
                 }
             else:
                 """
-            status, data = self.deny_login_challenge(challenge, device_id, 'Credenciales incorrectas')
+            status, data = self.deny_login_challenge(challenge, 'Credenciales incorrectas')
             if status != 200:
                 raise Exception(data)
 
@@ -118,13 +117,9 @@ class HydraModel:
             }
             return 403, response
         else:
-            ''' login correcto '''
-            d = self.get_device_logins(session, device_id)
-            d.success = d.success + 1
-            
-            status, data = self.accept_login_challenge(challenge, device_id, user_id, remember=False)
+            status, data = self.accept_login_challenge(challenge, user_id, remember=False)
             if status != 200:
-                raise Exception(data)   
+                raise Exception(data)
 
             response = {
                 'redirect_to': data['redirect_to']
