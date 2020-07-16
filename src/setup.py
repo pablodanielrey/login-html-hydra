@@ -20,13 +20,13 @@ setup(name='login-html-hydra',
                             #'gunicorn',
                             'requests',
                             'Flask',
-                            'flask-wtf'
+                            'flask-wtf',
+                            'users-model',
+                            'login-model',
+                            'SQLAlchemy'
                             #'flask_jsontools'
                             #'flask-cors',
                             #'Flask-OIDC',
-                            #'SQLAlchemy',
-                            #'users-model',
-                            #'login-model'
                             #'microservices_common>=2.0.7a1'
                           ],
           entry_points={
