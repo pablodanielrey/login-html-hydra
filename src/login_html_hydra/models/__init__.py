@@ -1,6 +1,7 @@
 import os
 
 from login.model.LoginModel import LoginModel
+from login.model.entities.User import User, Mail, IdentityNumberTypes, MailTypes
 from users.model.UsersModel import UsersModel
 
 HYDRA_ADMIN_URL = os.environ.get('HYDRA_ADMIN_URL')

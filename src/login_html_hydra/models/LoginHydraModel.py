@@ -1,17 +1,11 @@
 
-from . import hydraModel, loginModel, usersModel
+from . import hydraModel, loginModel, usersModel, User, Mail, IdentityNumberTypes, MailTypes
 from .db import open_users_session, open_login_session
 
 class LoginHydraModel():
 
-    INTERNAL_DOMAINS = os.environ['INTERNAL_DOMAINS'].split(',')
-
     def __init__(self):
         pass
-
-    """ TODO: modificar esto ya que ahroa si tenemos concepto de cuenta interna o externa en la entidad de los mails """
-    def _is_internal_mail(mail):
-        return mail.split('@')[1] in INTERNAL_DOMAINS
 
     def _get_user_dni(self, user:User):
         for i in user.identity_numbers:
@@ -25,6 +19,27 @@ class LoginHydraModel():
                 return i.number
         return None    
 
+    def _get_internal_mail(self, user:User):
+        """
+            Obtengo el primer correo institucional confirmado
+            Si tiene mas de 1 correo es alfabéticamente ordenado
+        """
+        mails = [m.email for m in user.mails if m.deleted is None and m.confirmed and m.type == MailTypes.INSTITUTIONAL]
+        mails.sort(reverse=False)
+        if len(mails) > 0:
+            return mails[0]
+        return None
+
+    def _get_external_mail(self, user:User):
+        """
+            Retorna el primer correo externo confirmado.
+            Si tiene mas de 1 correco confirmado entonces es ordenado alfabéticamente.
+        """
+        mails = [m.email for m in user.mails if m.deleted is None and m.confirmed]
+        mails.sort(reverse=False)
+        if len(mails) > 0:
+            return mails[0]
+
     def _generate_context(self, user):
         """
             Genera el contexto del token del usuario
@@ -33,29 +48,18 @@ class LoginHydraModel():
             'sub':user.id,
             'given_name': user.firstname,
             'family_name': user.lastname,
-            'preferred_username': _get_user_dni(user)
+            'preferred_username': self._get_user_dni(user)
         }
-        student_number = _get_user_student_number(user)
+        student_number = self._get_user_student_number(user)
         if student_number:
             context['student_number'] = student_number
 
-        mail_context = None
-        mails = [m.email for m in user.mails if m.deleted is None and m.confirmed]
-        internals_mail = [m for m in mails if _is_internal_mail(m)]
-        """ esta lista debe ser determinista!!! asi que la ordeno por longitud por ejemplo para que sea determinista y después por el orden normal (para el caso de 2 mails de mismo largo) """
-        internals_mail.sort(revese=False, key=len)
-        internals_mails.sort(reverse=False)
-
-        if len(internals_mail) > 0:
-            mail_context = internals_mail[0]
+        mail = self._get_internal_mail(user)
+        if not mail:
+            mail = self._get_external_mail(user)
         
-        if not mail_context:
-            externals_mails = [m for m in mails if not _is_internal_mail(m)]
-            if len(externals_mails) > 0:
-                mail_context = externals_mails[0]
-    
-        if mail_context:
-            context['email'] = mail_context
+        if mail:
+            context['email'] = mail
             context['email_verified'] = True
         return context
 
