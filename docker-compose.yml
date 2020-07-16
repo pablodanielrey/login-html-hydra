@@ -6,4 +6,4 @@ services:
     - "5000:5000"
     volumes:
     - ./src:/src
-    command: /bin/bash -c "while [ 1 ]; do sleep 1s; done"
+    command: /bin/bash -c "while [ 1 ]; do sleep 120s; done"
