@@ -21,7 +21,7 @@ setup(name='login-html-hydra',
                             'requests',
                             'Flask',
                             'flask-wtf'
-                            #'flask_jsontools',
+                            #'flask_jsontools'
                             #'flask-cors',
                             #'Flask-OIDC',
                             #'SQLAlchemy',

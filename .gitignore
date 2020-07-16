@@ -131,3 +131,5 @@ dmypy.json
 
 #agregados
 .bash_history
+.local
+
