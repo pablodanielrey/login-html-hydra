@@ -1,6 +1,7 @@
 FROM python:3.8
 
+RUN echo "user:x:1000:1000:user:/src:/bin/bash" >> /etc/passwd
 COPY pip.conf /etc/
 
+USER 1000:1000
 WORKDIR /src
-CMD /bin/bash
