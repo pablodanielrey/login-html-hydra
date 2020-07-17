@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "/src/github/login-html-hydra/src/login_html_hydra/app.py",
+                "FLASK_APP": "login_html_hydra:/src/github/login-html-hydra/src/login_html_hydra/__main__.py",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "0"
             },
@@ -18,7 +18,9 @@
             "args": [
                 "run",
                 "--no-debugger",
-                "--no-reload"
+                "--no-reload",
+                "--host=0.0.0.0",
+                "--port=10005"
             ],
             "jinja": true
         }
