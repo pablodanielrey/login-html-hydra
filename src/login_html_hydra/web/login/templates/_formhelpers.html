@@ -1,0 +1,19 @@
+{% macro submit(field) %}
+    <button class='algo' type='submit'>{{ field.label }}</button>
+{% endmacro %}
+
+{% macro input_text(field) %}
+    {{field.label}}
+    <input type='text' class='' name='{{field.name}}'/>
+{% endmacro %}
+
+{% macro input_password(field) %}
+    {{field.label}}
+    <input type='password' class='password' name={{field.name}}/>
+{% endmacro %}
+
+{% macro ejemplo(field) %}
+    {{ field.errros }}
+    {{ field.label }}
+    {{ field.value }}
+{% endmacro %}
