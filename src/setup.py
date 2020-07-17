@@ -23,7 +23,8 @@ setup(name='login-html-hydra',
                             'flask-wtf',
                             'users-model',
                             'login-model',
-                            'SQLAlchemy'
+                            'SQLAlchemy',
+                            'pytest'
                             #'flask_jsontools'
                             #'flask-cors',
                             #'Flask-OIDC',
