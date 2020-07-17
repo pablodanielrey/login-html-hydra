@@ -46,7 +46,6 @@ def login_post():
             return render_template('error.html', error='Error de ingreso', version=config.version)
         else:
             return redirect(redirect_url)
-
     else:
         logging.info(f'error en submit')
     return render_template('login.html', form=form, version=config.version)

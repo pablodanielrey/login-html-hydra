@@ -77,24 +77,25 @@ class LoginHydraModel():
         assert redirect is None
 
         with open_login_session() as lsession:
-            uid, hash_ = loginModel.login(lsession, username, password, '', challenge)
-            if not uid:
+            login, hash_ = loginModel.login(lsession, username, password, '', challenge)
+            if login:
+                uid = login.user_id
                 with open_users_session() as usession:
                     users = usersModel.get_users(usession, [uid])
                     assert len(users) > 0
                     user = users[0]
                     context = self._generate_context(user)
-                    status, data = hydraModel.accept_login_challenge(challenge=challenge, uid=uid, data=context, remember=False)
+                    status, data = hydraApi.accept_login_challenge(challenge=challenge, uid=uid, data=context, remember=False)
                     if status != 200:
                         return False, None
                     redirect = data['redirect_to']
-                    return redirect
+                    return True, redirect
             else:
-                status, data = hydraModel.deny_login_challenge(challenge, None, 'Credenciales incorrectas')
+                status, data = hydraApi.deny_login_challenge(challenge, None, 'Credenciales incorrectas')
                 if status != 200:
                     return False, None
                 redirect = data['redirect_to']
-                return redirect
+                return True, redirect
 
 
     def accept_login_challenge(self, challenge):
@@ -104,9 +105,9 @@ class LoginHydraModel():
     
 
     def check_login_challenge(self, challenge):
-        valid, skip = hydraApi.get_login_challenge(challenge)
-        if valid:
-            if skip:
+        code, data = hydraApi.get_login_challenge(challenge)
+        if code == 200:
+            if data['skip']:
                 status, data = hydraApi.accept_login_challenge(challenge)
                 redirect = data['redirect_url']
                 return True, True, redirect
@@ -119,16 +120,16 @@ class LoginHydraModel():
         """
             https://www.ory.sh/hydra/docs/reference/api/#get-consent-request-information
         """
-        status, data = hydraModel.get_consent_challenge(challenge)
+        status, data = hydraApi.get_consent_challenge(challenge)
         if status != 200:
             return False, None
 
         scopes = data['requested_scope']
         context = data['context'] 
-        status, redirect = hydraModel.accept_consent_challenge(challenge=challenge, scopes=scopes, context=context, remember=False)
+        status, redirect = hydraApi.accept_consent_challenge(challenge=challenge, scopes=scopes, context=context, remember=False)
         if status != 200:
             return False, None
 
-        return True, redirect
+        return True, redirect['redirect_to']
 
 loginHydraModel = LoginHydraModel()

@@ -4,7 +4,7 @@ logging.getLogger().setLevel(logging.INFO)
 from flask import render_template, flash, redirect,request, Markup, url_for, request
 from . import bp, config
 
-from login_html_hydra.models import loginHydraModel
+from login_html_hydra.models.LoginHydraModel import loginHydraModel
 
 @bp.route('/', methods=['GET'])
 def consent():
