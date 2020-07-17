@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "app:webapp",
+                "FLASK_APP": "/src/github/login-html-hydra/src/login_html_hydra/app.py",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "0"
             },
