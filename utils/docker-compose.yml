@@ -22,7 +22,7 @@ services:
     command:
       serve all --dangerous-force-http
     environment:
-      SYSTEM_SECRET: algoresecreto
+      SYSTEM_SECRET: algoresecretoskjghdskjghsdkjghsdkjghsdkjghsdkj
       DATABASE_URL: postgres://hydra:hydra123456789@192.168.11.2:5432/hydra?sslmode=disable
       OAUTH2_ISSUER_URL: http://oidc:4444
       urls.self.issuer: http://oidc:4444

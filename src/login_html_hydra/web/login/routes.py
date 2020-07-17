@@ -6,7 +6,7 @@ from . import bp, config
 
 from .forms import LoginForm
 
-from login_html_hydra.models import loginHydraModel
+from login_html_hydra.models.LoginHydraModel import loginHydraModel
 
 @bp.route('/', methods=['GET'])
 def login():

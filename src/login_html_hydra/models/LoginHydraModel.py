@@ -1,6 +1,7 @@
 import logging
 
-from . import hydraModel, loginModel, usersModel, User, Mail, IdentityNumberTypes, MailTypes
+from .models import hydraApi, loginModel, usersModel
+from . import User, Mail, IdentityNumberTypes, MailTypes
 from .db import open_users_session, open_login_session
 
 class LoginHydraModel():
@@ -103,7 +104,7 @@ class LoginHydraModel():
     
 
     def check_login_challenge(self, challenge):
-        valid, skip = hydraApi.login(challenge)
+        valid, skip = hydraApi.get_login_challenge(challenge)
         if valid:
             if skip:
                 status, data = hydraApi.accept_login_challenge(challenge)
@@ -130,3 +131,4 @@ class LoginHydraModel():
 
         return True, redirect
 
+loginHydraModel = LoginHydraModel()

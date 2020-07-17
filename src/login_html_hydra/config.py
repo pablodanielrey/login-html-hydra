@@ -17,3 +17,7 @@ class LoginEnv:
     DB_HOST = os.environ['DB_HOST'],
     DB_PORT = os.environ.get('DB_PORT', 5432),
     DB_NAME = os.environ['DB_NAME']
+
+class HydraEnv:
+    HYDRA_ADMIN_URL = os.environ.get('HYDRA_ADMIN_URL')
+    VERIFY_HTTPS = bool(int(os.environ.get('VERIFY_HTTPS',0)))
