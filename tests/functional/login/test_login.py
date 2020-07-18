@@ -90,7 +90,10 @@ def test_login_ok(wait_for_api, client):
         'challenge': challenge
     }
     r = client.post('/login', data=params)
-    assert r.status_code == 200
+    assert r.status_code == 308
+    pytest.fail(r.text)
+
+    r = client.post('/login/', data=params)
     assert challenge in r.text
     assert 'Error de usuario' in r.text     
    
