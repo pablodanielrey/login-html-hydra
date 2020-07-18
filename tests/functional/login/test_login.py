@@ -1,5 +1,5 @@
-import pytest
 import requests
+import pytest
 
 
 def test_login_ok(httpserver):

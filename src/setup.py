@@ -25,7 +25,7 @@ setup(name='login-html-hydra',
                             'login-model',
                             'SQLAlchemy',
                             'pytest',
-                            'pytest-httpserver'
+                            'pytest-docker-compose'
                             #'flask_jsontools'
                             #'flask-cors',
                             #'Flask-OIDC',
