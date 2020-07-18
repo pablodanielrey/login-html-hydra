@@ -1,0 +1,27 @@
+version: "3.5"
+services:
+  db_login:
+    image: postgres
+    ports:
+      - 5555:5432/tcp
+    environment:
+      POSTGRES_DB: login
+      POSTGRES_USER: login
+      POSTGRES_PASSWORD: clavesuperultrarecontrasecreta
+    #network_mode: "host"
+
+  db_users:
+    image: postgres
+    ports:
+      - 5556:5432/tcp
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: users
+      POSTGRES_PASSWORD: clavesuperultrarecontrasecreta
+
+  hydra:
+    build: hydra_mock
+    ports:
+      - 4445:4445/tcp
+    #network_mode: "host"
+    command: "python /hydra_server.py"

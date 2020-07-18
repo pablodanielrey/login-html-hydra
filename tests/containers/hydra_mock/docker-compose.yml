@@ -1,8 +1,0 @@
-version: "3.5"
-services:
-  db_hydra:
-    build: .
-    ports:
-      - 4445:4445/tcp
-    #network_mode: "host"
-    command: "python /hydra_server.py"
