@@ -3,7 +3,7 @@ services:
   web:
     build: docker/
     ports:
-    - "5000:5000"
+    - "10005:10005"
     volumes:
     - ./src:/src
     command: /bin/bash -c "while [ 1 ]; do sleep 120s; done"

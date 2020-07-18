@@ -1,10 +1,21 @@
 import requests
 import pytest
+import time
 
+pytest_plugins = ["docker_compose"]
 
-def test_login_ok(httpserver):
+@pytest.fixture(scope='module')
+def wait_for_api(module_scoped_container_getter):
+    """ espera hasta que los contendores estén levantados y se pueda conectar a la api correctamente """
+    time.sleep(10)
+    service = module_scoped_container_getter.get("web").network_info[0]
+    api_url = f"http://{service.hostname}:{service.host_port}/"
+    return api_url
+
+def test_login_ok(wait_for_api):
+    login_url = wait_for_api
+
     challenge = 'algodechallengeopaco'
-    login_url = httpserver.url:_for('')
     params = {
         'username': 'usuario',
         'password': 'clave',

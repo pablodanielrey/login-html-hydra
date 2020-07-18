@@ -1,0 +1,42 @@
+version: '3.5'
+services:
+  db_login:
+    image: postgres
+    ports:
+      - 5555:5432/tcp
+    environment:
+      POSTGRES_DB: login
+      POSTGRES_USER: login
+      POSTGRES_PASSWORD: clavesuperultrarecontrasecreta
+    #network_mode: "host"
+
+  db_users:
+    image: postgres
+    ports:
+      - 5556:5432/tcp
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: users
+      POSTGRES_PASSWORD: clavesuperultrarecontrasecreta
+    #network_mode: "host"
+
+  web:
+    build: .
+    ports:
+    - "10005:10005"
+    volumes:
+    - ../../../src:/src
+    environment:
+      USERS_DB_USER: users
+      USERS_DB_PASSWORD: clavesuperultrarecontrasecreta
+      USERS_DB_HOST: 192.168.10.3
+      USERS_DB_PORT: 5556
+      USERS_DB_NAME: users
+      DB_USER: login
+      DB_PASSWORD: clavesuperultrarecontrasecreta
+      DB_HOST: 192.168.10.3
+      DB_PORT: 5555
+      DB_NAME: login
+      HYDRA_ADMIN_URL: 'http://192.168.10.3:4445'
+      VERIFY_HTTPS: 0
+    command: /bin/bash -c "pip install -e . && python -m login_html_hydra"
