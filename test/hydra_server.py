@@ -1,12 +1,22 @@
-import pytest
-import requests
-from pytest_httpserver import httpserver
 
-def test_login_ok(httpserver):
+from flask import Flask, jsonify, make_response, request
+webapp = Flask(__name__)
 
-    challenge = 'algodechallengeopaco'
+@webapp.route('/oauth2/auth/requests/login', methods=['GET'])
+def login_request():
+    challenge = request.args.get('login_challenge')
 
-    httpserver.expect_request('/oauth2/auth/requests/login').respond_with_json({
+    if not challenge:
+        generic_error = {
+            "debug": "The database adapter was unable to find the element",
+            "error": "The requested resource could not be found",
+            "error_description": "Object with ID 12345 does not exist",
+            "status_code": 404
+        }
+        return make_response(jsonify(generic_error)), 404
+
+    skip = False
+    response_ok = {
         "challenge": challenge,
         "client": {
             "allowed_cors_origins": [
@@ -78,18 +88,10 @@ def test_login_ok(httpserver):
             "string"
         ],
         "session_id": "string",
-        "skip": True,
-        "subject": "string"
-    })
-
-    params = {
-        'username': 'usuario',
-        'password': 'clave',
-        'challenge': challenge
+        "skip": skip
     }
-    r = requests.post(login_url, params, allow_redirects=False)
-    assert r.status_code == 200
-    assert challenge in r.text
-    assert 'Error de usuario' in r.text 
+    return make_response(jsonify(response_ok)), 200
 
-    
+
+if __name__ == '__main__':
+    webapp.run('0.0.0.0',4445)
