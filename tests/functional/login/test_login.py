@@ -10,11 +10,11 @@ def wait_for_api(module_scoped_container_getter):
     """ espera hasta que los contendores estén levantados y se pueda conectar a la api correctamente """
     time.sleep(10)
 
-    service = module_scoped_container_getter.get("hydra").network_info[0]
-    hydra_api_url = f"http://{service.hostname}:{service.host_port}/"
-
     users = module_scoped_container_getter.get('db_users').network_info[0]
     login = module_scoped_container_getter.get('db_login').network_info[0]
+
+    service = module_scoped_container_getter.get("hydra").network_info[0]
+    hydra_api_url = f"http://{service.hostname}:{service.host_port}/"    
 
     data = {
         'hydra_api_url': hydra_api_url,
@@ -80,7 +80,7 @@ def test_login_get(wait_for_api, client):
     query = {
         'login_challenge': 'asdfdssdfsdsdfd'
     }
-    r = client.get('/login',query_string=query, allow_redirects=False)
+    r = client.get('/login',query_string=query)
 
 def test_login_ok(wait_for_api, client):
     challenge = 'algodechallengeopaco'
@@ -89,7 +89,7 @@ def test_login_ok(wait_for_api, client):
         'password': 'clave',
         'challenge': challenge
     }
-    r = client.post('/login', data=params, allow_redirects=False)
+    r = client.post('/login', data=params)
     assert r.status_code == 200
     assert challenge in r.text
     assert 'Error de usuario' in r.text     
