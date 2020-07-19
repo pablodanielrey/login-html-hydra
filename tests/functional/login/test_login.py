@@ -1,6 +1,8 @@
 import requests
 import pytest
 import time
+import uuid
+import datetime
 
 pytest_plugins = ["docker_compose"]
 
@@ -25,9 +27,9 @@ def wait_for_api(module_scoped_container_getter):
     }
     return data
 
-@pytest.fixture(scope='module')
-def client(wait_for_api):
 
+@pytest.fixture(scope='module')
+def prepare_enfironment(wait_for_api):
     data = wait_for_api
 
     """ agrego las variables de entorno adecuadas """
@@ -46,11 +48,66 @@ def client(wait_for_api):
 
     os.environ['HYDRA_ADMIN_URL'] = data['hydra_api_url']
 
-
-
     """ agrego el path del sistema para poder instanciarlo """
     import sys
     sys.path.append('../../src/')
+
+
+
+@pytest.fixture(scope='module')
+def prepare_dbs(prepare_enfironment):
+    """
+        genera un usuario de testing dentro de las bases de datos.
+    """
+    from users.model.entities.User import User, Mail, MailTypes, IdentityNumber, IdentityNumberTypes
+    from login.model.entities.Login import UserCredentials
+    from login_html_hydra.models.db import open_users_session, open_login_session
+
+    uid = str(uuid.uuid4())
+    with open_users_session() as session:
+        
+        u = User()
+        u.id = uid
+        u.name = 'name'
+        u.lastname = 'lastname'
+        session.add(u)
+
+        i = IdentityNumber()
+        i.id = str(uuid.uuid4())
+        i.user_id = uid
+        i.number = '12345678'
+        i.type = IdentityNumberTypes.DNI
+        session.add(i)
+
+        m = Mail()
+        m.id = str(uuid.uuid4())
+        m.confirmed = True
+        m.email = 'testuser@econo.unlp.edu.ar'
+        m.type = MailTypes.INSTITUTIONAL
+        m.user_id = uid
+        session.add(m)
+
+        m = Mail()
+        m.id = str(uuid.uuid4())
+        m.confirmed = True
+        m.email = 'testuser@alternative.com'
+        m.type = MailTypes.ALTERNATIVE
+        m.user_id = uid
+        session.add(m)
+
+    with open_login_session() as session:
+
+        uc = UserCredentials()
+        uc.id = str(uuid.uuid4())
+        uc.created = datetime.datetime.utcnow()
+        uc.user_id = uid
+        uc.username = 'username'
+        uc.password = 'password'
+        session.add(uc)
+
+
+@pytest.fixture(scope='module')
+def client(prepare_enfironment):
 
     from login_html_hydra.web.app import webapp
     webapp.config['TESTING'] = True
@@ -60,40 +117,24 @@ def client(wait_for_api):
             yield client
 
 
-"""
-def test_login_ok(wait_for_api, client):
-    login_url = wait_for_api
-
-    challenge = 'algodechallengeopaco'
-    params = {
-        'username': 'usuario',
-        'password': 'clave',
-        'challenge': challenge
-    }
-    r = requests.post(login_url, params, allow_redirects=False)
-    assert r.status_code == 200
-    assert challenge in r.text
-    assert 'Error de usuario' in r.text 
-"""
-
-def test_login_get(wait_for_api, client):
+def test_login_get(prepare_dbs, client):
     query = {
         'login_challenge': 'asdfdssdfsdsdfd'
     }
     r = client.get('/login',query_string=query)
 
-def test_login_ok(wait_for_api, client):
+def test_login_ok(prepare_dbs, client):
     challenge = 'algodechallengeopaco'
     params = {
-        'username': 'usuario',
-        'password': 'clave',
+        'username': 'username',
+        'password': 'password',
         'challenge': challenge
     }
     r = client.post('/login', data=params)
     assert r.status_code == 308
-    pytest.fail(r.text)
 
     r = client.post('/login/', data=params)
-    assert challenge in r.text
-    assert 'Error de usuario' in r.text     
+    assert r.status_code == 200
+    
+    
    
