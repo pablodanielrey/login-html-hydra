@@ -3,6 +3,32 @@
 from flask import Flask, jsonify, make_response, request
 webapp = Flask(__name__)
 
+
+@webapp.route('/oauth2/auth/requests/login/reject', methods=['PUT'])
+def reject_login_request():
+    """ https://www.ory.sh/hydra/docs/reference/api/#reject-a-login-request """
+    challenge = request.args.get('login_challenge')
+
+    assert challenge is not None
+    body = request.json
+    assert 'error' in body
+    assert 'error_description' in body
+    assert 'error_hint' in body
+    assert 'status_code' in body
+
+    """
+        200	OK	completedRequest
+        401	Unauthorized
+        404	Not Found
+        500	Internal Server Error
+    """
+
+    completedRequest = {
+        'redirect_to': "http://rechazado.com/oauh_callback?error='dsasdadasd'"
+    }
+    return make_response(jsonify(completedRequest)), 200
+
+
 @webapp.route('/oauth2/auth/requests/login', methods=['GET'])
 def login_request():
     challenge = request.args.get('login_challenge')

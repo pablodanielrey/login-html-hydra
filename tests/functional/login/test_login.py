@@ -165,9 +165,7 @@ def test_login_err(prepare_dbs, client):
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
-    logging.info(r.headers)
-    logging.info(r.data)
-    assert r.status_code == 200
+    assert r.status_code == 302
     
 def test_login_ok(prepare_dbs, client):
     challenge = 'df2f3fr2332r32r3223332r'
