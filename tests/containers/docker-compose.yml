@@ -4,6 +4,8 @@ services:
     image: postgres
     ports:
       - 5555:5432/tcp
+    volumes:
+      - /tmp/login_db:/var/lib/postgresql
     environment:
       POSTGRES_DB: login
       POSTGRES_USER: login
@@ -14,6 +16,8 @@ services:
     image: postgres
     ports:
       - 5556:5432/tcp
+    volumes:
+      - /tmp/users_db:/var/lib/postgresql
     environment:
       POSTGRES_DB: users
       POSTGRES_USER: users

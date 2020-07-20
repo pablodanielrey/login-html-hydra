@@ -35,17 +35,21 @@ def login_post():
     """
         paso 2
     """
-    form = LoginForm()
-    if form.validate_on_submit():
-        logging.info(f'ingreso {form.username.data} {form.password.data}')
-        challenge = form.challenge.data
-        username = form.username.data
-        password = form.password.data
-        ok, redirect_url = loginHydraModel.login(challenge, username, password)
-        if not ok:
-            return render_template('error.html', error='Error de ingreso', version=config.version)
+    try:
+        form = LoginForm()
+        if form.validate_on_submit():
+            logging.info(f'ingreso {form.username.data} {form.password.data}')
+            challenge = form.challenge.data
+            username = form.username.data
+            password = form.password.data
+            ok, redirect_url = loginHydraModel.login(challenge, username, password)
+            if not ok:
+                return render_template('error.html', error='Error de ingreso', version=config.version), 400
+            else:
+                return redirect(redirect_url)
         else:
-            return redirect(redirect_url)
-    else:
-        logging.info(f'error en submit')
-    return render_template('login.html', form=form, version=config.version)
+            logging.info(f'error en submit')
+            return render_template('login.html', form=form, version=config.version), 400
+    except Exception as e:
+        logging.exception(e)
+        return render_template('error.html', error='Error de ingreso', version=config.version), 400
