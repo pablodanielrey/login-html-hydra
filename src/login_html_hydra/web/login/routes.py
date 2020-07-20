@@ -16,19 +16,22 @@ def login():
         login_challenge va como parámetro query.
         https://www.ory.sh/hydra/docs/reference/api/#get-a-login-request
     """
-    challenge = request.args.get('login_challenge')
-    valid, skip, redirect_url = loginHydraModel.check_login_challenge(challenge)
-    if valid:
+    try:
+        challenge = request.args.get('login_challenge')
+        data = loginHydraModel.get_login_challenge(challenge)
+        skip = data['skip']
         if skip:
-            """ el codigo que esta en hydra-api esta mal para este caso """
-            redirect_url = loginHydraModel.accept_login_challenge(challenge)
-            return redirect(redirect_url)
+            uid = data['sub']
+            redirect_url = loginHydraModel.accept_login_challenge(challenge, uid)
+            return redirect(redirect_url), 302
         else:
             form = LoginForm()
             form.challenge.data = challenge
-            return render_template('login.html', form=form, version=config.version)
-    else:
-        return render_template('error.html', error='Error de ingreso', version=config.version)
+            return render_template('login.html', form=form, version=config.version), 200
+
+    except Exception as e:
+        logging.exception(e)
+        return render_template('error.html', error='Error de ingreso', version=config.version), 400
 
 @bp.route('/', methods=['POST'])
 def login_post():
@@ -42,14 +45,15 @@ def login_post():
             challenge = form.challenge.data
             username = form.username.data
             password = form.password.data
-            ok, redirect_url = loginHydraModel.login(challenge, username, password)
-            if not ok:
+            redirect_url = loginHydraModel.login(challenge, username, password)
+            if not redirect_url:
                 return render_template('error.html', error='Error de ingreso', version=config.version), 400
             else:
-                return redirect(redirect_url)
+                return redirect(redirect_url), 302
         else:
-            logging.info(f'error en submit')
+            logging.warn('error en formulario')
             return render_template('login.html', form=form, version=config.version), 400
+
     except Exception as e:
         logging.exception(e)
         return render_template('error.html', error='Error de ingreso', version=config.version), 400

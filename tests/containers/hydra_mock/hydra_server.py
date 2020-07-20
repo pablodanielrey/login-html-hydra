@@ -1,15 +1,30 @@
-
-
 from flask import Flask, jsonify, make_response, request
 webapp = Flask(__name__)
 
+INVALID_CHALLENGE = 'invalidchallenge'
+VALID_CHALLENGE = 'validchallenge'
 
 @webapp.route('/oauth2/auth/requests/login/reject', methods=['PUT'])
 def reject_login_request():
     """ https://www.ory.sh/hydra/docs/reference/api/#reject-a-login-request """
-    challenge = request.args.get('login_challenge')
 
-    assert challenge is not None
+    generic_error = {
+        "debug": "The database adapter was unable to find the element",
+        "error": "The requested resource could not be found",
+        "error_description": "Object with ID 12345 does not exist",
+        "status_code": 404
+    }        
+
+    challenge = request.args.get('login_challenge')
+    if challenge is None:
+        generic_error['status_code'] = 500
+        return make_response(jsonify(generic_error)), 500
+
+    if INVALID_CHALLENGE == challenge:
+        generic_error['status_code'] = 404
+        return make_response(jsonify(generic_error)), 404
+
+
     body = request.json
     assert 'error' in body
     assert 'error_description' in body
@@ -31,16 +46,31 @@ def reject_login_request():
 
 @webapp.route('/oauth2/auth/requests/login', methods=['GET'])
 def login_request():
-    challenge = request.args.get('login_challenge')
+    """
+        https://www.ory.sh/hydra/docs/reference/api/#get-a-login-request 
 
+        200	OK	loginRequest	loginRequest
+        400	Bad Request	genericError	genericError
+        404	Not Found	genericError	genericError
+        409	Conflict	genericError	genericError
+        500	Internal Server Error	genericError	genericError    
+    """
+
+    generic_error = {
+        "debug": "The database adapter was unable to find the element",
+        "error": "The requested resource could not be found",
+        "error_description": "Object with ID 12345 does not exist",
+        "status_code": 404
+    }
+    challenge = request.args.get('login_challenge')
     if not challenge:
-        generic_error = {
-            "debug": "The database adapter was unable to find the element",
-            "error": "The requested resource could not be found",
-            "error_description": "Object with ID 12345 does not exist",
-            "status_code": 404
-        }
+        generic_error['status_code'] = 400
+        return make_response(jsonify(generic_error)), 400
+
+    if INVALID_CHALLENGE == challenge:
+        generic_error['status_code'] = 404
         return make_response(jsonify(generic_error)), 404
+
 
     skip = False
     response_ok = {

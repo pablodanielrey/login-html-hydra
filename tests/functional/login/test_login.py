@@ -7,6 +7,9 @@ import logging
 
 pytest_plugins = ["docker_compose"]
 
+INVALID_CHALLENGE = 'invalidchallenge'
+VALID_CHALLENGE = 'validchallenge'
+
 
 @pytest.fixture(scope='module')
 def wait_for_api(module_scoped_container_getter):
@@ -124,7 +127,6 @@ def prepare_dbs(prepare_enfironment):
 
 @pytest.fixture(scope='module')
 def client(prepare_enfironment):
-
     from login_html_hydra.web.app import webapp
     webapp.config['TESTING'] = True
     webapp.config['WTF_CSRF_CHECK_DEFAULT'] = False
@@ -133,7 +135,6 @@ def client(prepare_enfironment):
         client
         with webapp.app_context():
             yield client
-
 
 def test_login_url_redireccion(client):
     r = client.get('/login', query_string={})
@@ -148,8 +149,8 @@ def test_login_url_redireccion(client):
     r = client.post('/login', data={'param1':'value1'})
     assert r.status_code == 308
 
-def test_login_get(prepare_dbs, client):
-    challenge = 'asdsadasdsadsda'
+def test_valid_login_get(prepare_dbs, client):
+    challenge = VALID_CHALLENGE
     query = {
         'login_challenge': challenge
     }
@@ -157,8 +158,16 @@ def test_login_get(prepare_dbs, client):
     assert r.status_code == 200
     assert challenge in str(r.data)
 
-def test_login_err(prepare_dbs, client):
-    challenge = 'algodechallengeopaco'
+def test_invalid_login_get(prepare_dbs, client):
+    challenge = INVALID_CHALLENGE
+    query = {
+        'login_challenge': challenge
+    }
+    r = client.get('/login/', query_string=query)
+    assert r.status_code == 400
+
+def test_valid_login_err(prepare_dbs, client):
+    challenge = VALID_CHALLENGE
     params = {
         'username': 'username',
         'password': 'wrongpassword',
@@ -167,6 +176,16 @@ def test_login_err(prepare_dbs, client):
     r = client.post('/login/', data=params)
     assert r.status_code == 302
     
+def test_invalid_login_err(prepare_dbs, client):
+    challenge = INVALID_CHALLENGE
+    params = {
+        'username': 'username',
+        'password': 'wrongpassword',
+        'challenge': challenge
+    }
+    r = client.post('/login/', data=params)
+    assert r.status_code == 400
+
 def test_login_ok(prepare_dbs, client):
     challenge = 'df2f3fr2332r32r3223332r'
     params = {

@@ -21,11 +21,11 @@ class HydraApi:
             'Accept': 'application/json'
         }
         r = requests.get(url, params={'login_challenge': challenge},headers=h, verify=self.verify)
-        if r.status_code == 200:
-            return (200, r.json())
-        return (r.status_code, str(r))
+        if r.status_code != 200:
+            raise Exception(r.status_code)
+        return r.json()
 
-    def accept_login_challenge(self, challenge:str, uid:str, data={}, remember=True):
+    def accept_login_challenge(self, challenge:str, uid:str, data={}, remember=False):
         url = f"{self.hydra_api}/oauth2/auth/requests/login/accept"
         h = {
             'X-Forwarded-Proto':'https',
@@ -39,9 +39,9 @@ class HydraApi:
             'remember_for': 1 if not remember else 0
         }
         r = requests.put(url, params={'login_challenge': challenge}, headers=h, json=data, verify=self.verify)
-        if r.status_code == 200:
-            return (200, r.json())
-        return (r.status_code, str(r))
+        if r.status_code != 200:
+            raise Exception(r.status_code)
+        return r.json()
 
     def deny_login_challenge(self, challenge:str, device_id:str, error:str):
         url = f"{self.hydra_api}/oauth2/auth/requests/login/reject"
@@ -58,9 +58,9 @@ class HydraApi:
             "status_code": 404
         }
         r = requests.put(url, params={'login_challenge': challenge}, headers=h, json=data, verify=self.verify)
-        if r.status_code == 200:
-            return (200, r.json())
-        return (r.status_code, str(r))
+        if r.status_code != 200:
+            raise Exception(r.status_code)
+        return r.json()
 
     def get_consent_challenge(self, challenge:str):
         url = f"{self.hydra_api}/oauth2/auth/requests/consent"
@@ -69,9 +69,9 @@ class HydraApi:
             'Accept': 'application/json'
         }
         r = requests.get(url, params={'consent_challenge': challenge},headers=h, verify=self.verify)
-        if r.status_code == 200:
-            return (200, r.json())
-        return (r.status_code, str(r))
+        if r.status_code != 200:
+            raise Exception(r.status_code)
+        return r.json()
 
     def accept_consent_challenge(self, challenge:str, scopes=[], context={}, remember=True):
         url = f"{self.hydra_api}/oauth2/auth/requests/consent/accept"
@@ -91,38 +91,6 @@ class HydraApi:
         }
         r = requests.put(url, params={'consent_challenge': challenge}, headers=h, json=data, verify=self.verify)
         if r.status_code == 200:
-            return (200, r.json())
-        return (r.status_code, str(r))
-
-    def process_user_login(self, session, challenge:str, user_id:str = None):
-
-        if not user_id:
-            """
-            ''' login erróneo, chequeo la cantidad de intentos fallidos por device '''
-            d = self.get_device_logins(session, device_id)
-            if d.errors <= 5:
-                d.errors = d.errors + 1
-                remaining = 5 - d.errors
-                return 404, {
-                    'remaining': remaining
-                }
-            else:
-                """
-            status, data = self.deny_login_challenge(challenge, 'Credenciales incorrectas')
-            if status != 200:
-                raise Exception(data)
-
-            response = {
-                'redirect_to': data['redirect_to']
-            }
-            return 403, response
-        else:
-            status, data = self.accept_login_challenge(challenge, user_id, remember=False)
-            if status != 200:
-                raise Exception(data)
-
-            response = {
-                'redirect_to': data['redirect_to']
-            }
-            return  200, response
+            raise Exception(r.status_code)
+        return r.json()
 
