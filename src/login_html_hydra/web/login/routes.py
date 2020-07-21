@@ -46,10 +46,8 @@ def login_post():
             username = form.username.data
             password = form.password.data
             redirect_url = loginHydraModel.login(challenge, username, password)
-            if not redirect_url:
-                return render_template('error.html', error='Error de ingreso', version=config.version), 400
-            else:
-                return redirect(redirect_url), 302
+            assert redirect_url is not None
+            return redirect(redirect_url), 302
         else:
             logging.warn('error en formulario')
             return render_template('login.html', form=form, version=config.version), 400

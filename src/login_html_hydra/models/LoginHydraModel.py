@@ -66,6 +66,12 @@ class LoginHydraModel():
         return context
 
     def login(self, challenge, username, password):
+        """
+            acepta o deniega el challenge de hydra.
+            solo retorna una exception cuando algo no funciona.
+            en el caso de usuario inválido se retorna un 200 con un redirect a un error.
+        """
+
         logging.debug(f'username: {username} - challenge: {challenge} inicio de logueo')
         data = self.get_login_challenge(challenge)
         assert data['skip'] is False

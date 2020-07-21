@@ -117,12 +117,12 @@ def prepare_dbs(prepare_enfironment):
             uc.created = datetime.datetime.utcnow()
             uc.user_id = uid
             uc.username = 'username'
-            uc.password = 'password'
+            uc.credentials = 'password'
             session.add(uc)
             session.commit()
 
     with open_login_session() as session:
-        session.query(UserCredentials).filter(UserCredentials.username == 'username').one()
+        session.query(UserCredentials).filter(UserCredentials.username == 'username', UserCredentials.credentials == 'password').one()
 
 
 @pytest.fixture(scope='module')
@@ -137,15 +137,13 @@ def client(prepare_enfironment):
             yield client
 
 def test_login_url_redireccion(client):
+    """ las redirecciones que hace automáticamente flask """
     r = client.get('/login', query_string={})
     assert r.status_code == 308
-
     r = client.get('/login', query_string={'param1':'value1'})
     assert r.status_code == 308
-
     r = client.post('/login')
     assert r.status_code == 308
-
     r = client.post('/login', data={'param1':'value1'})
     assert r.status_code == 308
 
@@ -165,6 +163,7 @@ def test_invalid_login_get(prepare_dbs, client):
     }
     r = client.get('/login/', query_string=query)
     assert r.status_code == 400
+    assert "Error de ingreso" in str(r.data)
 
 def test_valid_login_err(prepare_dbs, client):
     challenge = VALID_CHALLENGE
@@ -185,18 +184,29 @@ def test_invalid_login_err(prepare_dbs, client):
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 400
+    assert "Error de ingreso" in str(r.data)
 
-def test_login_ok(prepare_dbs, client):
-    challenge = 'df2f3fr2332r32r3223332r'
+def test_valid_login_ok(prepare_dbs, client):
+    challenge = VALID_CHALLENGE
     params = {
         'username': 'username',
         'password': 'password',
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
-    if r.status_code != 302:
-        pytest.fail(r.data)
     assert r.status_code == 302
+
+def test_invalid_login_ok(prepare_dbs, client):
+    challenge = INVALID_CHALLENGE
+    params = {
+        'username': 'username',
+        'password': 'password',
+        'challenge': challenge
+    }
+    r = client.post('/login/', data=params)
+    assert r.status_code == 400
+    assert "Error de ingreso" in str(r.data)
+
 
     
     

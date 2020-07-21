@@ -44,6 +44,45 @@ def reject_login_request():
     return make_response(jsonify(completedRequest)), 200
 
 
+@webapp.route('/oauth2/auth/requests/login/accept', methods=['PUT'])
+def accept_login_request():
+    """ https://www.ory.sh/hydra/docs/reference/api/#accept-a-login-request """
+
+    generic_error = {
+        "debug": "The database adapter was unable to find the element",
+        "error": "The requested resource could not be found",
+        "error_description": "Object with ID 12345 does not exist",
+        "status_code": 404
+    }        
+
+    challenge = request.args.get('login_challenge')
+    if challenge is None:
+        generic_error['status_code'] = 500
+        return make_response(jsonify(generic_error)), 500
+
+    if INVALID_CHALLENGE == challenge:
+        generic_error['status_code'] = 404
+        return make_response(jsonify(generic_error)), 404
+
+
+    body = request.json
+    """ https://www.ory.sh/hydra/docs/reference/api/#schemaacceptloginrequest """
+    assert 'subject' in body
+
+    """
+        200	OK	completedRequest
+        401	Unauthorized
+        404	Not Found
+        500	Internal Server Error
+    """
+
+    completedRequest = {
+        'redirect_to': "http://todook.cliente.com/oauh_callback?token='dsasdadasd'&blablabla=1"
+    }
+    return make_response(jsonify(completedRequest)), 200
+
+
+
 @webapp.route('/oauth2/auth/requests/login', methods=['GET'])
 def login_request():
     """
