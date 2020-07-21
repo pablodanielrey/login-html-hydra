@@ -120,7 +120,7 @@ def prepare_dbs(prepare_environment):
 
 
 @pytest.fixture(scope='module')
-def client(prepare_environment):
+def client(prepare_dbs, prepare_environment):
     from login_html_hydra.web.app import webapp
     webapp.config['TESTING'] = True
     webapp.config['WTF_CSRF_CHECK_DEFAULT'] = False
