@@ -136,6 +136,7 @@ def client(prepare_enfironment):
         with webapp.app_context():
             yield client
 
+
 def test_login_url_redireccion(client):
     """ las redirecciones que hace automáticamente flask """
     r = client.get('/login', query_string={})
