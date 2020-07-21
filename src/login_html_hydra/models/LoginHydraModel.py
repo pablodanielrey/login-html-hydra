@@ -107,6 +107,7 @@ class LoginHydraModel():
             https://www.ory.sh/hydra/docs/reference/api/#get-consent-request-information
         """
         data = hydraApi.get_consent_challenge(challenge)
+        logging.debug(f'consent: {data}')
         scopes = data['requested_scope']
         context = data['context'] 
         redirect = hydraApi.accept_consent_challenge(challenge=challenge, scopes=scopes, context=context, remember=False)

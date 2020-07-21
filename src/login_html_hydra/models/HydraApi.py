@@ -90,7 +90,7 @@ class HydraApi:
             }
         }
         r = requests.put(url, params={'consent_challenge': challenge}, headers=h, json=data, verify=self.verify)
-        if r.status_code == 200:
+        if r.status_code != 200:
             raise Exception(r.status_code)
         return r.json()
 

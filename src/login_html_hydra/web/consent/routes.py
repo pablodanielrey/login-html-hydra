@@ -10,13 +10,15 @@ from login_html_hydra.models.LoginHydraModel import loginHydraModel
 def consent():
     """
         paso 3
-        Ruta solicitada por hydra cuando se inicia acepto un challenge de login
-        login_challenge va como parámetro query.
+        Ruta solicitada por hydra cuando se inicia acepto un challenge de consent
+        consent_challenge va como parámetro query.
         https://www.ory.sh/hydra/docs/reference/api/#get-consent-request-information
     """
-    challenge = request.args.get('consent_challenge')
-    ok, redirect_url = loginHydraModel.check_and_accept_consent_challenge(challenge)
-    if ok:
-        return redirect(redirect_url)
-    else:
-        return render_template('error.html', error='Error de ingreso', version=config.version)
+    try:
+        challenge = request.args.get('consent_challenge')
+        redirect_url = loginHydraModel.check_and_accept_consent_challenge(challenge)
+        return redirect(redirect_url), 302
+
+    except Exception as e:
+        logging.exception(e)
+        return render_template('error.html', error='Error de ingreso', version=config.version), 400
