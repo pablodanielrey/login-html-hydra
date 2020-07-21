@@ -1,7 +1,18 @@
+{% extends "base.html" %}
+
 {% block content %}
-<div class="row">
-    pagina de error general
-    error  {{ error }}
-    versión {{ version }}
+<div class="pantalla">
+    <div class="contenedor">
+        <div class="iconoError"> <i class="large material-icons">error_outline</i> </div>
+        <!-- <div class="tituloError"><h5> <B>ERROR</B></h5></div> -->
+        <div class="tituloError"><B>SE HA PRODUCIDO UN ERROR INESPERADO.</B></div>
+        <div class="mensaje">Por favor intente nuevamente... </div>
+        <div class="detalleError">
+            <span>Detalle del error</span><br>
+            <b>{{ error }}</b><br>
+            <span>Versión</span><br>
+            <b>{{ version }}</b><br>
+        </div>
+    </div>
 </div>
 {% endblock %}

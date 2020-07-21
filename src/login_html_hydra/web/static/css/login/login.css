@@ -1,0 +1,143 @@
+.pantalla {
+    display: flex;
+    height: 100%;
+
+    align-items: center;
+    justify-content: center;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 400px;
+    min-height: 422px;
+    padding: 40px;
+    -webkit-box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.formulario{
+    display: flex;
+    flex-direction: column;
+}
+
+.inputFormulario {
+    font-weight: 100px;
+    background-color: red;
+}
+
+
+.imgLogo {
+    margin-bottom: 20px;
+    width: 100%;
+
+}
+
+.btn {
+    margin-top: 20px;
+}
+
+.btnReset {
+    margin: 0 auto;
+    margin-top: 10px;
+
+  }
+
+.btn label {
+    font-size: 14px;
+    color: white;
+}
+
+label {
+    font-size: 14px;
+}
+
+ /* label color */
+ .input-field label {
+    color: #000;
+  }
+  /* label focus color */
+  .input-field input[type=text]:focus + label {
+    color: #1565c0 !important;
+  }
+  /* label underline focus color */
+  .input-field input[type=text]:focus {
+    border-bottom: 1px solid #90caf9   !important;
+    box-shadow: 0 1px 0 0 #90caf9  !important;
+  }
+  /* valid color */
+  .input-field input[type=text].valid {
+    border-bottom: 1px solid red;
+    box-shadow: 0 1px 0 0 red;
+  }
+  /* invalid color */
+  .input-field input[type=text].invalid {
+    border-bottom: 1px solid red;
+    box-shadow: 0 1px 0 0 red;
+  }
+  /* icon prefix focus color */
+  .input-field .prefix.active {
+    color: #1565c0;
+  }
+
+@media screen and (max-width: 718px) {
+    
+    .pantalla {
+        padding: 30px;
+align-items: flex-start;
+    }
+
+    .contenedor {
+        width: 100%;
+        padding: 0px;
+        -webkit-box-shadow: 0 0 0 0;
+        box-shadow: 0 0 0 0;
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+    }
+
+}
+    
+
+/* ******************* ERROR GENERAL********************** */
+
+.iconoError {
+    text-align: center;
+
+} 
+
+.tituloError {
+    text-align: center;
+}
+
+.mensaje {
+    text-align: center;
+}
+
+.detalleError {
+    font-weight: 300;
+    margin-top: 40px;
+    padding: 10px;
+    background-color: #F4F4F4;
+    border: 1px solid #EAEAEA;
+
+}
+
+/* ************************ CONSENT ***************************** */
+
+.progress {
+    background-color: #90caf9 !important;
+    opacity: 0.5;
+ }
+
+.progress .indeterminate {
+    background-color: #1565c0 !important;
+}

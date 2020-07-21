@@ -1,10 +1,18 @@
+{% extends "base.html" %}
 {% block content %}
+    <div class="pantalla">
+        <div class="contenedor">
+            <div><img src="/static/img/logo_fce.png" class="imgLogo"></div>
+            {% from "_formhelpers.html" import submit, input_text, input_password %}
+            <form method=post class="formulario">
+                {{ input_text(form.username) }}
+                {{ input_password(form.password) }}
+                {{ submit(form.submit) }}
+            </form>
+            <a class="btnReset waves-effect waves-teal  btn-flat"><i class="material-icons left">lock_open</i>olvidé mi contraseña</a>
 
-    {% from "_formhelpers.html" import submit, input_text, input_password %}
-    <form method=post>
-        {{ input_text(form.username) }}
-        {{ input_password(form.password) }}
-        {{ submit(form.submit) }}
-    </form>
 
+
+        </div>
+    </div>
 {% endblock %}
