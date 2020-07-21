@@ -30,17 +30,21 @@ def prepare_enfironment(wait_for_api):
     os.environ['USERS_DB_USER'] = 'users'
     os.environ['USERS_DB_PASSWORD'] = 'clavesuperultrarecontrasecreta'
     os.environ['USERS_DB_NAME'] = 'users'
-    os.environ['USERS_DB_HOST'] = data['users_db_host']
-    os.environ['USERS_DB_PORT'] = data['users_db_port']
+    os.environ['USERS_DB_HOST'] = '0.0.0.0'
+    os.environ['USERS_DB_PORT'] = '0.0.0.0'
 
     os.environ['DB_USER'] = 'login'
     os.environ['DB_PASSWORD'] = 'clavesuperultrarecontrasecreta'
     os.environ['DB_NAME'] = 'login'
-    os.environ['DB_HOST'] = data['login_db_host']
-    os.environ['DB_PORT'] = data['login_db_port']
+    os.environ['DB_HOST'] = '0.0.0.0'
+    os.environ['DB_PORT'] = '0.0.0.0'
 
     os.environ['HYDRA_ADMIN_URL'] = data['hydra_api_url']
 
     """ agrego el path del sistema para poder instanciarlo """
     import sys
     sys.path.append('../../src/')
+
+
+def test_consent_ok():
+    pass
