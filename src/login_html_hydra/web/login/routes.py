@@ -50,6 +50,9 @@ def login_post():
             return redirect(redirect_url), 302
         else:
             logging.warn('error en formulario')
+            challenge = form.challenge.data
+            if not challenge:
+                return render_template('error.html', error='Error de ingreso', version=config.version), 400
             return render_template('login.html', form=form, version=config.version), 400
 
     except Exception as e:

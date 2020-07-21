@@ -6,8 +6,6 @@ import datetime
 import logging
 import sys
 
-""" agrego el path del sistema para poder instanciarlo """
-sys.path.append('../../src/')
 
 @pytest.fixture(scope='module')
 def wait_for_api(module_scoped_container_getter):
@@ -57,7 +55,7 @@ def prepare_dbs(prepare_environment):
     """
 
     """ agrego el path del sistema para poder instanciarlo """
-    sys.path.append('../../src/')
+    sys.path.append('../src/')
 
     from users.model.entities.User import User, Mail, MailTypes, IdentityNumber, IdentityNumberTypes
     from users.model.__main__ import create_tables as create_user_tables

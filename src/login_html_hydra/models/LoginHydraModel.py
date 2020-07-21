@@ -42,7 +42,7 @@ class LoginHydraModel():
         if len(mails) > 0:
             return mails[0]
 
-    def _generate_context(self, user):
+    def _generate_context(self, user:User):
         """
             Genera el contexto del token del usuario
         """
