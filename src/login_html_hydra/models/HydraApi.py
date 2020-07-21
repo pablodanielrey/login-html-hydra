@@ -26,6 +26,11 @@ class HydraApi:
         return r.json()
 
     def accept_login_challenge(self, challenge:str, uid:str, data={}, remember=False):
+        if not uid:
+            raise Exception(400)
+        if not challenge:
+            raise Exception(400)
+        
         url = f"{self.hydra_api}/oauth2/auth/requests/login/accept"
         h = {
             'X-Forwarded-Proto':'https',

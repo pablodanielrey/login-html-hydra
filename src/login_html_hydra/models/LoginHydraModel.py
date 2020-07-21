@@ -95,7 +95,7 @@ class LoginHydraModel():
 
     def accept_login_challenge(self, challenge, uid):
         data = hydraApi.accept_login_challenge(challenge, uid)
-        redirect = data['redirect_url']
+        redirect = data['redirect_to']
         return redirect
     
     def get_login_challenge(self, challenge):
