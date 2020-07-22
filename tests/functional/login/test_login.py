@@ -34,8 +34,8 @@ def test_null_login_get(client):
     assert r.status_code == 400
     assert STRING_DE_ERROR in str(r.data)
 
-def test_valid_login_get(client):
-    challenge = VALID_CHALLENGE
+def test_valid_login_get(client, config_ok):
+    challenge = config_ok['challenge']
     query = {
         'login_challenge': challenge
     }
@@ -43,8 +43,8 @@ def test_valid_login_get(client):
     assert r.status_code == 200
     assert challenge in str(r.data)
 
-def test_invalid_login_get(client):
-    challenge = INVALID_CHALLENGE
+def test_invalid_login_get(client,config_err):
+    challenge = config_err['challenge']
     query = {
         'login_challenge': challenge
     }
@@ -61,19 +61,21 @@ def test_null_login_post(client):
     assert r.status_code == 400
     assert STRING_DE_ERROR in str(r.data)
 
-def test_null_login_err(client):
+def test_null_login_err(client, config_err):
+    creds = config_err['credentials']
     params = {
-        'username': 'username',
-        'password': 'wrongpassword'
+        'username': creds.username,
+        'password': creds.credentials
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 400
     assert STRING_DE_ERROR in str(r.data)
 
-def test_null_login_ok(client):
+def test_null_login_ok(client, config_ok):
+    creds = config_ok['credentials']
     params = {
-        'username': 'username',
-        'password': 'password'
+        'username': creds.username,
+        'password': creds.credentials
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 400
@@ -84,62 +86,66 @@ def test_null_login_ok(client):
     post de los datos con challenge
 """
 
-def test_valid_login_required_fail(client):
-    challenge = VALID_CHALLENGE
+def test_valid_login_required_fail(client, config_ok):
+    challenge = config_ok['challenge']
+    creds = config_ok['credentials']
     params = {
-        'username': 'username',
+        'username': creds.username,
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 400
     assert challenge in str(r.data)
 
-def test_invalid_login_required_fail(client):
-    challenge = INVALID_CHALLENGE
+def test_invalid_login_required_fail(client, config_err, config_ok):
+    challenge = config_err['challenge']
+    creds = config_ok['credentials']
     params = {
-        'username': 'username',
+        'username': creds.username,
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 400
     assert challenge in str(r.data)
 
-def test_valid_login_err(client):
-    challenge = VALID_CHALLENGE
+def test_valid_login_err(client, config_ok, config_err):
+    challenge = config_ok['challenge']
     params = {
-        'username': 'username',
-        'password': 'wrongpassword',
+        'username': config_ok['credentials'].username,
+        'password': config_err['credentials'].credentials,
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 302
     
-def test_invalid_login_err(client):
-    challenge = INVALID_CHALLENGE
+def test_invalid_login_err(client, config_ok, config_err):
+    challenge = config_err['challenge']
     params = {
-        'username': 'username',
-        'password': 'wrongpassword',
+        'username': config_ok['credentials'].username,
+        'password': config_err['credentials'].credentials,
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 400
     assert STRING_DE_ERROR in str(r.data)
 
-def test_valid_login_ok(client):
-    challenge = VALID_CHALLENGE
+def test_valid_login_ok(client, config_ok):
+    challenge = config_ok['challenge']
+    creds = config_ok['credentials']
     params = {
-        'username': 'username',
-        'password': 'password',
+        'username': creds.username,
+        'password': creds.credentials,
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 302
 
-def test_invalid_login_ok(client):
-    challenge = INVALID_CHALLENGE
+def test_invalid_login_ok(client, config_ok, config_err):
+    challenge = config_err['challenge']
+    creds = config_ok['credentials']
     params = {
-        'username': 'username',
-        'password': 'password',
+        'username': creds.username,
+        'password': creds.credentials,
         'challenge': challenge
     }
     r = client.post('/login/', data=params)

@@ -7,6 +7,64 @@ import logging
 import sys
 
 
+class UserConf:
+    uid: str
+    firstname: str
+    lastname: str
+    dni: str
+    imail: str
+    email: str
+    
+class PassConf:
+    username: str
+    credentials: str
+
+
+@pytest.fixture(scope='module')
+def config_ok():
+    u = UserConf()
+    u.uid = str(uuid.uuid4())
+    u.firstname = 'username'
+    u.lastname = 'lastname'
+    u.dni = '21324234'
+    u.imail = 'testuser@econo.unlp.edu.ar'
+    u.email = 'testuser@gmail.com'
+
+    p = PassConf()
+    p.username = 'username'
+    p.credentials = 'password'
+
+    challenge = 'validchallenge'
+
+    return {
+        'user': u,
+        'credentials': p,
+        'challenge': challenge
+    }
+
+@pytest.fixture(scope='module')
+def config_err():
+    u = UserConf()
+    u.uid = str(uuid.uuid4())
+    u.firstname = 'wrongusername'
+    u.lastname = 'wronglastname'
+    u.dni = '2234'
+    u.imail = 'wrongtestuser@econo.unlp.edu.ar'
+    u.email = 'wrongtestuser@gmail.com'
+
+    p = PassConf()
+    p.username = 'wrongusername'
+    p.credentials = 'wrongpassword'
+
+    challenge = 'invalidchallenge'
+
+    return {
+        'user': u,
+        'credentials': p,
+        'challenge': challenge
+    }
+
+
 @pytest.fixture(scope='module')
 def wait_for_api(module_scoped_container_getter):
     """ espera hasta que los contendores estén levantados y se pueda conectar a la api correctamente """
@@ -48,12 +106,12 @@ def prepare_environment(wait_for_api):
 
     os.environ['HYDRA_ADMIN_URL'] = data['hydra_api_url']
 
+
 @pytest.fixture(scope='module')
-def prepare_dbs(prepare_environment):
+def prepare_dbs(config_ok, prepare_environment):
     """
         genera un usuario de testing dentro de las bases de datos.
     """
-
     """ agrego el path del sistema para poder instanciarlo """
     sys.path.append('../src/')
 
@@ -67,26 +125,37 @@ def prepare_dbs(prepare_environment):
     
     from login_html_hydra.models.db import open_users_session, open_login_session
 
-    uid = str(uuid.uuid4())
+    user_ok = config_ok['user']
+    uid = user_ok.uid
+    creds_ok = config_ok['credentials']
+
     with open_users_session() as session:
-        if not session.query(User).filter(User.firstname == 'name').one_or_none():
+        for u in session.query(User).filter(User.firstname == user_ok.firstname, User.lastname == user_ok.lastname).all():
+            for i in u.identity_numbers:
+                session.delete(i)
+            for m in u.mails:
+                session.delete(m)
+            session.delete(u)
+        session.commit()
+
+        if not session.query(User).filter(User.firstname == user_ok.firstname).one_or_none():
             u = User()
             u.id = uid
-            u.firstname = 'name'
-            u.lastname = 'lastname'
+            u.firstname = user_ok.firstname
+            u.lastname = user_ok.lastname
             session.add(u)
 
             i = IdentityNumber()
             i.id = str(uuid.uuid4())
             i.user_id = uid
-            i.number = '12345678'
+            i.number = user_ok.dni
             i.type = IdentityNumberTypes.DNI
             session.add(i)
 
             m = Mail()
             m.id = str(uuid.uuid4())
             m.confirmed = datetime.datetime.utcnow()
-            m.email = 'testuser@econo.unlp.edu.ar'
+            m.email = user_ok.imail
             m.type = MailTypes.INSTITUTIONAL
             m.user_id = uid
             session.add(m)
@@ -94,7 +163,7 @@ def prepare_dbs(prepare_environment):
             m = Mail()
             m.id = str(uuid.uuid4())
             m.confirmed = datetime.datetime.utcnow()
-            m.email = 'testuser@alternative.com'
+            m.email = user_ok.email
             m.type = MailTypes.ALTERNATIVE
             m.user_id = uid
             session.add(m)
@@ -102,22 +171,54 @@ def prepare_dbs(prepare_environment):
             session.commit()
 
     with open_users_session() as session:
-        session.query(User).filter(User.firstname == 'name').one()
+        session.query(User).filter(User.firstname == user_ok.firstname).one()
 
     with open_login_session() as session:
-        if not session.query(UserCredentials).filter(UserCredentials.username == 'username').one_or_none():
+        for c in session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username):
+            session.delete(c)
+        session.commit()
+
+        if not session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username).one_or_none():
             uc = UserCredentials()
             uc.id = str(uuid.uuid4())
             uc.created = datetime.datetime.utcnow()
             uc.user_id = uid
-            uc.username = 'username'
-            uc.credentials = 'password'
+            uc.username = creds_ok.username
+            uc.credentials = creds_ok.credentials
             session.add(uc)
             session.commit()
 
     with open_login_session() as session:
-        session.query(UserCredentials).filter(UserCredentials.username == 'username', UserCredentials.credentials == 'password').one()
+        session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username, UserCredentials.credentials == creds_ok.credentials).one()
 
+    """
+        esto no funca hay que testearlo despues 
+
+
+    logging.warn('----------------------------------------------------------------------')
+    logging.warn('base configurada')
+    logging.warn('----------------------------------------------------------------------')
+
+    try:
+        yield
+
+    except Exception as e:
+        logging.warn('----------------------------------------------------------------------')
+        logging.warn('elminando entidades')
+        logging.warn('----------------------------------------------------------------------')
+
+        with open_login_session() as session:
+            session.query(UserCredentials).filter(UserCredentials.username == 'username', UserCredentials.credentials == 'password').delete()
+            session.commit()
+
+        with open_users_session() as session:
+            users = session.query(User).filter(User.firstname == 'username', User.lastname == 'lastname').all()
+            for u in users:
+                for m in u.mails:
+                    m.delete()
+                u.delete()
+            session.commit()
+    """
 
 @pytest.fixture(scope='module')
 def client(prepare_dbs, prepare_environment):

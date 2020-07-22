@@ -9,23 +9,19 @@ import logging
 
 pytest_plugins = ["docker_compose"]
 
-INVALID_CHALLENGE = 'invalidchallenge'
-VALID_CHALLENGE = 'validchallenge'
 STRING_DE_ERROR = 'Error de ingreso'
 
 
-def test_valid_consent_ok(client):
-    challenge = VALID_CHALLENGE
+def test_valid_consent_ok(client, config_ok):
     query = {
-        'consent_challenge': challenge
+        'consent_challenge': config_ok['challenge']
     }
     r = client.get('/consent/', query_string=query)
     assert r.status_code == 302
 
-def test_invalid_consent(client):
-    challenge = INVALID_CHALLENGE
+def test_invalid_consent(client, config_err):
     query = {
-        'consent_challenge': challenge
+        'consent_challenge': config_err['challenge']
     }
     r = client.get('/consent/', query_string=query)
     assert r.status_code == 400
