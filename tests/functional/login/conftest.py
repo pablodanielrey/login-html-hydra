@@ -130,6 +130,7 @@ def prepare_dbs(config_ok, prepare_environment):
     creds_ok = config_ok['credentials']
 
     with open_users_session() as session:
+        """
         for u in session.query(User).filter(User.firstname == user_ok.firstname, User.lastname == user_ok.lastname).all():
             for i in u.identity_numbers:
                 session.delete(i)
@@ -137,6 +138,7 @@ def prepare_dbs(config_ok, prepare_environment):
                 session.delete(m)
             session.delete(u)
         session.commit()
+        """
 
         if not session.query(User).filter(User.firstname == user_ok.firstname).one_or_none():
             u = User()
@@ -174,9 +176,11 @@ def prepare_dbs(config_ok, prepare_environment):
         session.query(User).filter(User.firstname == user_ok.firstname).one()
 
     with open_login_session() as session:
+        """
         for c in session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username):
             session.delete(c)
         session.commit()
+        """
 
         if not session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username).one_or_none():
             uc = UserCredentials()
