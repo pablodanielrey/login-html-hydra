@@ -31,8 +31,8 @@ def config_ok():
     u.email = 'testuser@gmail.com'
 
     p = PassConf()
-    p.username = 'username'
-    p.credentials = 'password'
+    p.username = 'secretusername'
+    p.credentials = 'secretcredentials'
 
     challenge = 'validchallenge'
 
