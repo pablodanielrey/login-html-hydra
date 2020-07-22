@@ -21,9 +21,8 @@ class PassConf:
 
 
 @pytest.fixture(scope='module')
-def config_ok():
+def config():
     u = UserConf()
-    u.uid = str(uuid.uuid4())
     u.firstname = 'username'
     u.lastname = 'lastname'
     u.dni = '21324234'
@@ -36,32 +35,26 @@ def config_ok():
 
     challenge = 'validchallenge'
 
-    return {
-        'user': u,
-        'credentials': p,
-        'challenge': challenge
-    }
+    u2 = UserConf()
+    u2.firstname = 'wrongusername'
+    u2.lastname = 'wronglastname'
+    u2.dni = '2234'
+    u2.imail = 'wrongtestuser@econo.unlp.edu.ar'
+    u2.email = 'wrongtestuser@gmail.com'
 
-@pytest.fixture(scope='module')
-def config_err():
-    u = UserConf()
-    u.uid = str(uuid.uuid4())
-    u.firstname = 'wrongusername'
-    u.lastname = 'wronglastname'
-    u.dni = '2234'
-    u.imail = 'wrongtestuser@econo.unlp.edu.ar'
-    u.email = 'wrongtestuser@gmail.com'
+    p2 = PassConf()
+    p2.username = 'wrongusername'
+    p2.credentials = 'wrongpassword'
 
-    p = PassConf()
-    p.username = 'wrongusername'
-    p.credentials = 'wrongpassword'
-
-    challenge = 'invalidchallenge'
+    challengei = 'invalidchallenge'
 
     return {
         'user': u,
+        'user_err': u2,
         'credentials': p,
-        'challenge': challenge
+        'credentials_err': p2,
+        'challenge': challenge,
+        'invalid_challenge': challengei
     }
 
 
@@ -108,7 +101,7 @@ def prepare_environment(wait_for_api):
 
 
 @pytest.fixture(scope='module')
-def prepare_dbs(config_ok, prepare_environment):
+def prepare_dbs(config, prepare_environment):
     """
         genera un usuario de testing dentro de las bases de datos.
     """
@@ -125,9 +118,30 @@ def prepare_dbs(config_ok, prepare_environment):
     
     from login_html_hydra.models.db import open_users_session, open_login_session
 
-    user_ok = config_ok['user']
-    uid = user_ok.uid
-    creds_ok = config_ok['credentials']
+    user_ok = config['user']
+    creds_ok = config['credentials']
+    uid = str(uuid.uuid4())
+
+    with open_login_session() as session:
+        """
+        for c in session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username):
+            session.delete(c)
+        session.commit()
+        """
+
+        if not session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username).one_or_none():
+            uc = UserCredentials()
+            uc.id = str(uuid.uuid4())
+            uc.created = datetime.datetime.utcnow()
+            uc.user_id = uid
+            uc.username = creds_ok.username
+            uc.credentials = creds_ok.credentials
+            session.add(uc)
+            session.commit()
+
+    with open_login_session() as session:
+        uc = session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username, UserCredentials.credentials == creds_ok.credentials).one()
+        uid = uc.user_id
 
     with open_users_session() as session:
         """
@@ -140,7 +154,7 @@ def prepare_dbs(config_ok, prepare_environment):
         session.commit()
         """
 
-        if not session.query(User).filter(User.firstname == user_ok.firstname).one_or_none():
+        if not session.query(User).filter(User.id == uid).one_or_none():
             u = User()
             u.id = uid
             u.firstname = user_ok.firstname
@@ -173,27 +187,8 @@ def prepare_dbs(config_ok, prepare_environment):
             session.commit()
 
     with open_users_session() as session:
-        session.query(User).filter(User.firstname == user_ok.firstname).one()
+        session.query(User).filter(User.id == uid, User.firstname == user_ok.firstname).one()
 
-    with open_login_session() as session:
-        """
-        for c in session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username):
-            session.delete(c)
-        session.commit()
-        """
-
-        if not session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username).one_or_none():
-            uc = UserCredentials()
-            uc.id = str(uuid.uuid4())
-            uc.created = datetime.datetime.utcnow()
-            uc.user_id = uid
-            uc.username = creds_ok.username
-            uc.credentials = creds_ok.credentials
-            session.add(uc)
-            session.commit()
-
-    with open_login_session() as session:
-        session.query(UserCredentials).filter(UserCredentials.username == creds_ok.username, UserCredentials.credentials == creds_ok.credentials).one()
 
     """
         esto no funca hay que testearlo despues 
@@ -224,13 +219,3 @@ def prepare_dbs(config_ok, prepare_environment):
             session.commit()
     """
 
-@pytest.fixture(scope='module')
-def client(prepare_dbs, prepare_environment):
-    from login_html_hydra.web.app import webapp
-    webapp.config['TESTING'] = True
-    webapp.config['WTF_CSRF_CHECK_DEFAULT'] = False
-    webapp.config['WTF_CSRF_ENABLED'] = False
-    with webapp.test_client() as client:
-        client
-        with webapp.app_context():
-            yield client

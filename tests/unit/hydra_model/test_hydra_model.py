@@ -19,15 +19,15 @@ def test_null_get_login_challenge(hydra_model):
     with pytest.raises(Exception):
         model.get_login_challenge(None)
 
-def test_invalid_get_login_challenge(hydra_model, config_err):
+def test_invalid_get_login_challenge(hydra_model, config):
     model = hydra_model
-    challenge = config_err['challenge']
+    challenge = config['invalid_challenge']
     with pytest.raises(Exception):
         model.get_login_challenge(challenge)
     
-def test_valid_get_login_challenge(hydra_model, config_ok):
+def test_valid_get_login_challenge(hydra_model, config):
     model = hydra_model
-    challenge = config_ok['challenge']
+    challenge = config['challenge']
     data = model.get_login_challenge(challenge)
     assert data['skip'] is not None
     assert data['challenge'] is not None
@@ -37,26 +37,26 @@ def test_valid_get_login_challenge(hydra_model, config_ok):
     aceptación de los challenge de login
 """
 
-def test_null_accept_login_challenge(hydra_model, config_ok, config_err):
+def test_null_accept_login_challenge(hydra_model, config):
     model = hydra_model
     with pytest.raises(Exception):
         model.accept_login_challenge(None, None)
     with pytest.raises(Exception):
         model.accept_login_challenge(None, str(uuid.uuid4()))
     with pytest.raises(Exception):
-        model.accept_login_challenge(config_ok['challenge'], None)
+        model.accept_login_challenge(config['challenge'], None)
     with pytest.raises(Exception):
-        model.accept_login_challenge(config_err['challenge'], None)
+        model.accept_login_challenge(config['invalid_challenge'], None)
 
-def test_invalid_accept_login_challenge(hydra_model, config_err):
+def test_invalid_accept_login_challenge(hydra_model, config):
     model = hydra_model
-    challenge = config_err['challenge']
+    challenge = config['invalid_challenge']
     with pytest.raises(Exception):
         model.accept_login_challenge(challenge, str(uuid.uuid4()))
     
-def test_valid_accept_login_challenge(hydra_model, config_ok):
+def test_valid_accept_login_challenge(hydra_model, config):
     model = hydra_model
-    challenge = config_ok['challenge']
+    challenge = config['challenge']
     r = model.accept_login_challenge(challenge, str(uuid.uuid4()))
     assert r.startswith('http')
 
@@ -71,49 +71,49 @@ def test_login_null_params(hydra_model):
     with pytest.raises(Exception):
         model.login(None, None, None)
 
-def test_login_valid_ok(hydra_model, config_ok):
+def test_login_valid_ok(hydra_model, config):
     model = hydra_model
-    challenge = config_ok['challenge']
-    creds = config_ok['credentials']
+    challenge = config['challenge']
+    creds = config['credentials']
     r = model.login(challenge, creds.username, creds.credentials)
     assert r.startswith('http')
 
-def test_login_valid_worng_user(hydra_model, config_ok, config_err):
+def test_login_valid_worng_user(hydra_model, config):
     model = hydra_model
-    challenge = config_ok['challenge']
-    creds_ok = config_ok['credentials']
-    creds_err = config_err['credentials']
+    challenge = config['challenge']
+    creds_ok = config['credentials']
+    creds_err = config['credentials_err']
     r = model.login(challenge, creds_err.username, creds_ok.credentials)
     assert r.startswith('http')
 
-def test_login_valid_wrong_password(hydra_model, config_ok, config_err):
+def test_login_valid_wrong_password(hydra_model, config):
     model = hydra_model
-    challenge = config_ok['challenge']
-    creds_ok = config_ok['credentials']
-    creds_err = config_err['credentials']
+    challenge = config['challenge']
+    creds_ok = config['credentials']
+    creds_err = config['credentials_err']
     r = model.login(challenge, creds_ok.username, creds_err.credentials)
     assert r.startswith('http')
 
-def test_login_invalid_ok(hydra_model, config_ok, config_err):
+def test_login_invalid_ok(hydra_model, config):
     model = hydra_model
-    challenge = config_err['challenge']
-    creds_ok = config_ok['credentials']
+    challenge = config['invalid_challenge']
+    creds_ok = config['credentials']
     with pytest.raises(Exception):
         r = model.login(challenge, creds_ok.username, creds_ok.credentials)
     
-def test_login_invalid_worng_user(hydra_model, config_ok, config_err):
+def test_login_invalid_worng_user(hydra_model, config):
     model = hydra_model
-    challenge = config_err['challenge']
-    creds_ok = config_ok['credentials']
-    creds_err = config_err['credentials']
+    challenge = config['invalid_challenge']
+    creds_ok = config['credentials']
+    creds_err = config['credentials_err']
     with pytest.raises(Exception):
         r = model.login(challenge, creds_err.username, creds_ok.credentials)
 
-def test_login_invalid_wrong_password(hydra_model, config_ok, config_err):
+def test_login_invalid_wrong_password(hydra_model, config):
     model = hydra_model
-    challenge = config_err['challenge']
-    creds_ok = config_ok['credentials']
-    creds_err = config_err['credentials']
+    challenge = config['invalid_challenge']
+    creds_ok = config['credentials']
+    creds_err = config['credentials_err']
     with pytest.raises(Exception):
         r = model.login(challenge, creds_ok.username, creds_err.credentials)
 
@@ -127,15 +127,15 @@ def test_null_check_and_accept_consent(hydra_model):
     with pytest.raises(Exception):
         model.check_and_accept_consent_challenge(None)
 
-def test_check_and_accept_valid_consent(hydra_model, config_ok):
+def test_check_and_accept_valid_consent(hydra_model, config):
     model = hydra_model
-    challenge = config_ok['challenge']
+    challenge = config['challenge']
     r = model.check_and_accept_consent_challenge(challenge)
     assert r.startswith('http')
 
-def test_check_and_accept_invalid_consent(hydra_model, config_err):
+def test_check_and_accept_invalid_consent(hydra_model, config):
     model = hydra_model
-    challenge = config_err['challenge']
+    challenge = config['invalid_challenge']
     with pytest.raises(Exception):
         model.check_and_accept_consent_challenge(challenge)
 
