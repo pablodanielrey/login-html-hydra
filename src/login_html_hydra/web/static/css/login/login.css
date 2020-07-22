@@ -26,6 +26,8 @@
 .formulario{
     display: flex;
     flex-direction: column;
+    margin-top: 20px;
+
 }
 
 .inputFormulario {
@@ -35,7 +37,6 @@
 
 
 .imgLogo {
-    margin-bottom: 20px;
     width: 100%;
 
 }

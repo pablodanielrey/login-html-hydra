@@ -1,13 +1,19 @@
 {% macro submit(field) %}
-    <button class='algo' type='submit'>{{ field.label }}</button>
+    <button class="btn waves-effect waves-light #1565c0 blue darken-3 btn-large"  type='submit'>{{ field.label }}</button>
+
 {% endmacro %}
 
 {% macro input_text(field) %}
-    {{field.label}}
-    <input type='text' class='' name='{{field.name}}'/>
+   <div class="input-field">
+        <input type='text' class='' name='{{field.name}}'/>
+    </div>
+
 {% endmacro %}
 
 {% macro input_password(field) %}
-    <input type='password' class='password' name={{field.name}}/>
+    <div class="input-field">
+        <input type='password' class='password' name={{field.name}}/>
+        <label>{{field.label}}</label>
+    </div>
 {% endmacro %}
 
