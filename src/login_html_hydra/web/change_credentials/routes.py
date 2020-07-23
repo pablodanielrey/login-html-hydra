@@ -25,3 +25,17 @@ def change_credentials_post():
             return render_template('change_credentials_error.html', error='verifique las claves', version=config.version)
     else:
         return render_template('change_credentials_error.html', error='faltan datos requeridos', version=config.version)
+
+
+"""
+    solo para walter para poder estilar las pantallas.
+"""
+
+
+@bp.route('/error', methods=['GET'])
+def error_get():
+    return render_template('change_credentials_error.html', version=config.version)
+
+@bp.route('/success', methods=['GET'])
+def success_get():
+    return render_template('change_credentials_ok.html', version=config.version)
