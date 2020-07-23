@@ -6,8 +6,6 @@ import datetime
 import logging
 import sys
 
-
-
 def pytest_addoption(parser):
     group = parser.getgroup('environ')
     group.addoption(

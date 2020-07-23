@@ -133,3 +133,4 @@ dmypy.json
 .bash_history
 .local
 config_prod.json
+prof/**
