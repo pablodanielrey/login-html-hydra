@@ -2,31 +2,41 @@
 
 para poder ejecutar el sistema para poder desarrollar
 se debe usar:
-(debido al diseño de docker-compose usando run no te mapea los puertos, por lo que se debe ejecutar usando up)
 
+
+-- primero levantamos servicios básicos necesarios para la ejecución --
+
+cd raiz-del-proyecto/tests/containers
+docker-compose build
+docker-compose up 
+
+---- y en otra terminal ejecutamos el sistema ----
 
 cd raiz-del-proyecto
 docker-compose build
 docker-compose up
-
-ahora se puede ejecutar un shell dentro del proyecto y poder correrlo.
-
-docker exec -ti contenedor bash
-cd /src
-bash instalar.sh
-
-y ejecutar el sistema
-
-python -m login_html_hydra
 
 a partir de ahí se puede acceder al link
 
 http://localhost:10005
 
 
------
+----- casos de testings ----
 
-para ejecutar los testings desde la raiz activar el environment usando:
+existen 2 entornos confogirados:
+
+dev ---> 
+el entorno de testing usa los contenedores internos tests/containers/docker-compose.yml
+en este entorno se inserta un usuario de testeo
+
+prod --->
+el entorno de testing usa el contendor solamente de hydra-mock pero los accesos a las bases 
+son mediante fortporwarding hacia los datos de producción.
+esto permite ejeuctar los tests sobre el código actual pero utilizando datos de producción.
+
+
+desde la raiz se puede usar pytest para ejecutar los tests.
+(en el caso de que se use un virtual env separado se debe activar.)
 
 source env/bin/activate
 
