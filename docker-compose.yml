@@ -4,6 +4,21 @@ services:
     build: docker/
     ports:
     - "10005:10005"
+    environment:
+      USERS_DB_USER: users
+      USERS_DB_PASSWORD: clavesuperultrarecontrasecreta
+      USERS_DB_HOST: 0.0.0.0
+      USERS_DB_PORT: 6556
+      USERS_DB_NAME: users
+      DB_USER: login
+      DB_PASSWORD: clavesuperultrarecontrasecreta
+      DB_HOST: 0.0.0.0
+      DB_PORT: 6555
+      DB_NAME: login
+      HYDRA_ADMIN_URL: http://0.0.0.0:4445
+      VERIFY_HTTPS: 0
     volumes:
     - ./src:/src
-    command: /bin/bash -c "while [ 1 ]; do sleep 120s; done"
+    #command: /bin/bash -c "while [ 1 ]; do sleep 120s; done"
+    command: /bin/bash -c "cd /src && bash instalar.sh && python -m login_html_hydra"
+    network_mode: "host"
