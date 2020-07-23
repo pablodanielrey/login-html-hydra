@@ -132,4 +132,4 @@ dmypy.json
 #agregados
 .bash_history
 .local
-
+config_prod.json

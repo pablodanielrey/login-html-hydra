@@ -6,17 +6,7 @@ import datetime
 import logging
 import sys
 
-class UserConf:
-    uid: str
-    firstname: str
-    lastname: str
-    dni: str
-    imail: str
-    email: str
-    
-class PassConf:
-    username: str
-    credentials: str
+
 
 def pytest_addoption(parser):
     group = parser.getgroup('environ')
@@ -32,78 +22,48 @@ def pytest_addoption(parser):
 def config(request):
     e = request.config.option.environ
 
+    sys.path.append('config')
+    from config import UserConf, PassConf, valid_challenge, invalid_challenge
+
     if 'dev' == e:
-        u = UserConf()
-        u.firstname = 'username'
-        u.lastname = 'lastname'
-        u.dni = '21324234'
-        u.imail = 'testuser@econo.unlp.edu.ar'
-        u.email = 'testuser@gmail.com'
 
-        p = PassConf()
-        p.username = 'secretusername'
-        p.credentials = 'secretcredentials'
+        from config.config_dev import get_config
+        return get_config()
 
-        challenge = 'validchallenge'
-
-        u2 = UserConf()
-        u2.firstname = 'wrongusername'
-        u2.lastname = 'wronglastname'
-        u2.dni = '2234'
-        u2.imail = 'wrongtestuser@econo.unlp.edu.ar'
-        u2.email = 'wrongtestuser@gmail.com'
-
-        p2 = PassConf()
-        p2.username = 'wrongusername'
-        p2.credentials = 'wrongpassword'
-
-        challengei = 'invalidchallenge'
-
-        return {
-            'user': u,
-            'user_err': u2,
-            'credentials': p,
-            'credentials_err': p2,
-            'challenge': challenge,
-            'invalid_challenge': challengei
-        }
 
     if 'prod' == e:
-        u = UserConf()
-        u.firstname = 'username'
-        u.lastname = 'lastname'
-        u.dni = '21324234'
-        u.imail = 'testuser@econo.unlp.edu.ar'
-        u.email = 'testuser@gmail.com'
 
-        p = PassConf()
-        p.username = 'secretusername'
-        p.credentials = 'secretcredentials'
+        from config.config_prod import get_config
+        return get_config()
 
-        challenge = 'validchallenge'
+        """ 
+            esto es para despues probar generar las clases desde un json 
 
-        u2 = UserConf()
-        u2.firstname = 'wrongusername'
-        u2.lastname = 'wronglastname'
-        u2.dni = '2234'
-        u2.imail = 'wrongtestuser@econo.unlp.edu.ar'
-        u2.email = 'wrongtestuser@gmail.com'
+        import json
+        with open('tests/config/config_prod.json') as f:
+            conf = json.loads(f.read())
 
-        p2 = PassConf()
-        p2.username = 'wrongusername'
-        p2.credentials = 'wrongpassword'
-
-        challengei = 'invalidchallenge'
-
-        return {
-            'user': u,
-            'user_err': u2,
-            'credentials': p,
-            'credentials_err': p2,
-            'challenge': challenge,
-            'invalid_challenge': challengei
+        populated_conf = {
+            'challenge': valid_challenge,
+            'invalid_challenge': invalid_challenge
         }
 
+        this_module = sys.modules[__name__]
+        pytest.fail(str(dir(this_module)))
+        for e in conf.keys():
+            o = conf[e]
+            if '__class_name__' in o.keys():
+                cn = o['__class_name__']
+                class_ = getattr(this_module, cn)
+                instance = class_()
+                for attr in o.keys():
+                    if hasattr(instance, attr):
+                        setattr(instance, attr, e[attr])
+                populated_conf[e] = instance
+
+        return populated_conf
+
+        """
     raise Exception('debe seleccionar un environment')
 
 
@@ -131,10 +91,8 @@ def wait_for_api(module_scoped_container_getter):
 @pytest.fixture(scope='module')
 def prepare_environment(request, wait_for_api):
     data = wait_for_api
-
-    
+   
     e = request.config.option.environ
-
     if 'prod' == e:
 
         """ 

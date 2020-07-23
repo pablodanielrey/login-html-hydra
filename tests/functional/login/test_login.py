@@ -113,6 +113,7 @@ def test_valid_login_err(client, config):
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 302
+    assert 'error' in str(r.data)
     
 def test_invalid_login_err(client, config):
     challenge = config['invalid_challenge']
