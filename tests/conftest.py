@@ -26,44 +26,13 @@ def config(request):
     from config import UserConf, PassConf, valid_challenge, invalid_challenge
 
     if 'dev' == e:
-
         from config.config_dev import get_config
         return get_config()
 
-
     if 'prod' == e:
-
         from config.config_prod import get_config
         return get_config()
 
-        """ 
-            esto es para despues probar generar las clases desde un json 
-
-        import json
-        with open('tests/config/config_prod.json') as f:
-            conf = json.loads(f.read())
-
-        populated_conf = {
-            'challenge': valid_challenge,
-            'invalid_challenge': invalid_challenge
-        }
-
-        this_module = sys.modules[__name__]
-        pytest.fail(str(dir(this_module)))
-        for e in conf.keys():
-            o = conf[e]
-            if '__class_name__' in o.keys():
-                cn = o['__class_name__']
-                class_ = getattr(this_module, cn)
-                instance = class_()
-                for attr in o.keys():
-                    if hasattr(instance, attr):
-                        setattr(instance, attr, e[attr])
-                populated_conf[e] = instance
-
-        return populated_conf
-
-        """
     raise Exception('debe seleccionar un environment')
 
 
