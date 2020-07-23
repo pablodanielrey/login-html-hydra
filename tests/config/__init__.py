@@ -1,6 +1,9 @@
 
+
+import uuid
+
 valid_challenge = 'validchallenge'
-invalid_challenge = 'invalidchallenge'
+invalid_challenge = str(uuid.uuid4())
 
 class UserConf:
     uid: str

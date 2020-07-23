@@ -1,8 +1,11 @@
 from flask import Flask, jsonify, make_response, request
 webapp = Flask(__name__)
 
-INVALID_CHALLENGE = 'invalidchallenge'
 VALID_CHALLENGE = 'validchallenge'
+
+CLIENT_ERROR_URL = 'http://localhost/oauth_callback?error=23423432423'
+CLIENT_OK_URL = 'http://localhost/oauth_callback?token=sldnkklrklnklefnlweklfnenklfwe'
+CONSENT_URL = f'http://localhost:10005/consent/?consent_challenge={VALID_CHALLENGE}'
 
 @webapp.route('/oauth2/auth/requests/login/reject', methods=['PUT'])
 def reject_login_request():
@@ -20,7 +23,7 @@ def reject_login_request():
         generic_error['status_code'] = 500
         return make_response(jsonify(generic_error)), 500
 
-    if INVALID_CHALLENGE == challenge:
+    if VALID_CHALLENGE != challenge:
         generic_error['status_code'] = 404
         return make_response(jsonify(generic_error)), 404
 
@@ -39,7 +42,7 @@ def reject_login_request():
     """
 
     completedRequest = {
-        'redirect_to': "http://rechazado.com/oauh_callback?error='dsasdadasd'"
+        'redirect_to': CLIENT_ERROR_URL
     }
     return make_response(jsonify(completedRequest)), 200
 
@@ -60,7 +63,7 @@ def accept_login_request():
         generic_error['status_code'] = 500
         return make_response(jsonify(generic_error)), 500
 
-    if INVALID_CHALLENGE == challenge:
+    if VALID_CHALLENGE != challenge:
         generic_error['status_code'] = 404
         return make_response(jsonify(generic_error)), 404
 
@@ -77,7 +80,7 @@ def accept_login_request():
     """
 
     completedRequest = {
-        'redirect_to': "http://todook.cliente.com/oauh_callback?token='dsasdadasd'&blablabla=1"
+        'redirect_to': CONSENT_URL
     }
     return make_response(jsonify(completedRequest)), 200
 
@@ -106,7 +109,7 @@ def login_request():
         generic_error['status_code'] = 400
         return make_response(jsonify(generic_error)), 400
 
-    if INVALID_CHALLENGE == challenge:
+    if VALID_CHALLENGE != challenge:
         generic_error['status_code'] = 404
         return make_response(jsonify(generic_error)), 404
 
@@ -212,7 +215,7 @@ def consent_request():
         generic_error['status_code'] = 400
         return make_response(jsonify(generic_error)), 400
 
-    if INVALID_CHALLENGE == challenge:
+    if VALID_CHALLENGE != challenge:
         generic_error['status_code'] = 404
         return make_response(jsonify(generic_error)), 404
 
@@ -314,7 +317,7 @@ def accept_consent_request():
         generic_error['status_code'] = 500
         return make_response(jsonify(generic_error)), 500
 
-    if INVALID_CHALLENGE == challenge:
+    if VALID_CHALLENGE != challenge:
         generic_error['status_code'] = 404
         return make_response(jsonify(generic_error)), 404
 
@@ -326,7 +329,7 @@ def accept_consent_request():
     """
 
     completedRequest = {
-        'redirect_to': "http://todook.cliente.com/oauh_callback?token='dsasdadasd'&blablabla=1"
+        'redirect_to': CLIENT_OK_URL
     }
     return make_response(jsonify(completedRequest)), 200
 
