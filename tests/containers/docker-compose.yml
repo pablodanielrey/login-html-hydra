@@ -3,7 +3,7 @@ services:
   db_login:
     image: postgres
     ports:
-      - 5555:5432/tcp
+      - 6555:5432/tcp
     volumes:
       - /tmp/login_db:/var/lib/postgresql/data
     environment:
@@ -15,7 +15,7 @@ services:
   db_users:
     image: postgres
     ports:
-      - 5556:5432/tcp
+      - 6556:5432/tcp
     volumes:
       - /tmp/users_db:/var/lib/postgresql/data
     environment:

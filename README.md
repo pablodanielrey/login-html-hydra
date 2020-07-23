@@ -24,7 +24,22 @@ a partir de ahí se puede acceder al link
 http://localhost:10005
 
 
+-----
 
+para ejecutar los testings desde la raiz activar el environment usando:
 
+source env/bin/activate
+
+y despues ejecutar los tests desde la raiz del proyecto usando:
+
+pytest
+
+se pueden ejecutar los tests sobre el ambiente de producción usando 
+
+pytest --environ prod 
+
+previante hay que generar los portforwardings usando.
+
+servicios/oidc/scripts/generar-port-forwarding-para-login.sh
 
 

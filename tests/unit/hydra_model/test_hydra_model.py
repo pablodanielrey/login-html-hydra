@@ -1,14 +1,6 @@
 import pytest
 import uuid
 
-INVALID_CHALLENGE = 'invalidchallenge'
-VALID_CHALLENGE = 'validchallenge'
-
-USERNAME_OK = 'username'
-PASSWORD_OK = 'password'
-USERNAME_WRONG = 'u'
-PASSWORD_WRONG = 'p'
-
 
 """
     otbenr los challenges de login
@@ -77,6 +69,7 @@ def test_login_valid_ok(hydra_model, config):
     creds = config['credentials']
     r = model.login(challenge, creds.username, creds.credentials)
     assert r.startswith('http')
+    assert 'error' not in r
 
 def test_login_valid_worng_user(hydra_model, config):
     model = hydra_model
@@ -85,6 +78,7 @@ def test_login_valid_worng_user(hydra_model, config):
     creds_err = config['credentials_err']
     r = model.login(challenge, creds_err.username, creds_ok.credentials)
     assert r.startswith('http')
+    assert 'error' in r
 
 def test_login_valid_wrong_password(hydra_model, config):
     model = hydra_model
