@@ -5,6 +5,7 @@ import uuid
 import datetime
 import logging
 import sys
+import redis
 
 def pytest_addoption(parser):
     group = parser.getgroup('environ')
@@ -39,6 +40,7 @@ def wait_for_api(module_scoped_container_getter):
     """ espera hasta que los contendores estén levantados y se pueda conectar a la api correctamente """
     time.sleep(10)
 
+    redis = module_scoped_container_getter.get('redis').network_info[0]
     users = module_scoped_container_getter.get('db_users').network_info[0]
     login = module_scoped_container_getter.get('db_login').network_info[0]
 
@@ -50,7 +52,9 @@ def wait_for_api(module_scoped_container_getter):
         'users_db_host': users.hostname,
         'users_db_port': users.host_port,
         'login_db_host': login.hostname,
-        'login_db_port': login.host_port
+        'login_db_port': login.host_port,
+        'redis_host': redis.hostname,
+        'redis_port': redis.host_port
     }
     return data
 
@@ -72,6 +76,9 @@ def prepare_environment(request, wait_for_api):
         os.environ['USERS_DB_HOST'] = 'localhost'
         os.environ['USERS_DB_PORT'] = '5556'
 
+        os.environ['REDIS_HOST'] = data['redis_host']
+        os.environ['REDIS_PORT'] = data['redis_port']
+
         os.environ['HYDRA_ADMIN_URL'] = data['hydra_api_url']
 
     if 'dev' == e:
@@ -89,6 +96,9 @@ def prepare_environment(request, wait_for_api):
         os.environ['DB_NAME'] = 'login'
         os.environ['DB_HOST'] = data['login_db_host']
         os.environ['DB_PORT'] = data['login_db_port']
+
+        os.environ['REDIS_HOST'] = data['redis_host']
+        os.environ['REDIS_PORT'] = data['redis_port']
 
         os.environ['HYDRA_ADMIN_URL'] = data['hydra_api_url']
    
@@ -119,7 +129,7 @@ def prepare_dbs(request, config, prepare_environment):
         from login.model.__main__ import create_tables as create_login_tables
         create_login_tables()
         
-        from login_html_hydra.models.db import open_users_session, open_login_session
+        from login_html_hydra.models.db import open_users_session, open_login_session, open_redis_session
 
         user_ok = config['user']
         creds_ok = config['credentials']
@@ -192,6 +202,8 @@ def prepare_dbs(request, config, prepare_environment):
         with open_users_session() as session:
             session.query(User).filter(User.id == uid, User.firstname == user_ok.firstname).one()
 
+        with open_redis_session() as r:
+            r.flushall()
 
         """
             esto no funca hay que testearlo despues 

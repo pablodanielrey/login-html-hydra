@@ -24,6 +24,7 @@ setup(name='login-html-hydra',
                             'users-model',
                             'login-model',
                             'SQLAlchemy',
+                            'redis'
                             #'flask_jsontools'
                             #'flask-cors',
                             #'Flask-OIDC',

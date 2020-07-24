@@ -23,6 +23,11 @@ services:
       POSTGRES_USER: users
       POSTGRES_PASSWORD: clavesuperultrarecontrasecreta
 
+  redis:
+    image: redis
+    ports:
+      - 6379:6379/tcp
+  
   hydra:
     build: hydra_mock
     ports:

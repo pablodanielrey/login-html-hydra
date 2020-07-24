@@ -21,3 +21,7 @@ class LoginEnv:
 class HydraEnv:
     HYDRA_ADMIN_URL = os.environ.get('HYDRA_ADMIN_URL')
     VERIFY_HTTPS = bool(int(os.environ.get('VERIFY_HTTPS',0)))
+
+class RedisEnv:
+    HOST = os.environ.get('REDIS_HOST', '0.0.0.0')
+    PORT = os.environ.get('REDIS_PORT', '6379')
