@@ -53,3 +53,13 @@ previante hay que generar los portforwardings usando.
 servicios/oidc/scripts/generar-port-forwarding-para-login.sh
 
 
+------- Pasaje a producción -------
+
+
+para generar la imagen que va a producción se usa el script 
+
+build-prod.sh
+
+utiliza el dockerfile que se encuentra dentro de docker/prod
+instala gunicorn y usa eso para servir el sistema
+
