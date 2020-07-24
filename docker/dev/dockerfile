@@ -4,5 +4,10 @@ RUN pip install -U pip
 COPY docker/dev/pip.conf /etc/
 RUN echo "user:x:1000:1000:user:/src:/bin/bash" >> /etc/passwd
 
+# instalo las dependencias del sistema sin instalar el sistema 
+COPY docker/dev/install_deps.py /tmp
+COPY src/setup.py /tmp
+RUN python /tmp/install_deps.py
+
 USER 1000:1000
 WORKDIR /src
