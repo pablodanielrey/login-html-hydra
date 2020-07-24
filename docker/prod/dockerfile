@@ -1,0 +1,14 @@
+FROM python:3.8
+
+RUN pip install -U pip
+COPY docker/prod/pip.conf /etc/
+RUN echo "user:x:1000:1000:user:/src:/bin/bash" >> /etc/passwd
+
+RUN pip install gunicorn
+COPY src /src
+RUN cd /src && pip install -e .
+
+USER 1000:1000
+WORKDIR /src
+
+CMD cd /src && gunicorn --workers 1 --bind 0.0.0.0:10005 --timeout 3600 login_html_hydra.web.app:webapp

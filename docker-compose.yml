@@ -1,7 +1,9 @@
 version: '3.5'
 services:
   web:
-    build: docker/
+    build:
+      context: .
+      dockerfile: docker/dev/dockerfile
     ports:
     - "10005:10005"
     environment:
@@ -20,5 +22,5 @@ services:
     volumes:
     - ./src:/src
     #command: /bin/bash -c "while [ 1 ]; do sleep 120s; done"
-    command: /bin/bash -c "cd /src && bash instalar.sh && python -m login_html_hydra"
+    #command: /bin/bash -c "cd /src && bash instalar.sh && python -m login_html_hydra"
     network_mode: "host"

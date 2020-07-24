@@ -1,7 +1,7 @@
 FROM python:3.8
 
 RUN pip install -U pip
-COPY pip.conf /etc/
+COPY docker/dev/pip.conf /etc/
 RUN echo "user:x:1000:1000:user:/src:/bin/bash" >> /etc/passwd
 
 USER 1000:1000
