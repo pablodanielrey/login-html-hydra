@@ -25,7 +25,7 @@ class CredentialsModel:
             assert data is not None
             return json.loads(data)
 
-    def get_indirect_reset_info(self, cid):
+    def get_indexed_reset_info(self, cid):
         with open_redis_session() as r:
             if cid not in r:
                 raise Exception(f'El código {cid} no existe')
@@ -38,12 +38,20 @@ class CredentialsModel:
 
 
     def generate_reset_info(self, username):
+        try:
+            data = self.get_indexed_reset_info(username)
+            return data
+        except Exception:
+            pass
+
+        """
         with open_redis_session() as r:
             if username in r:
                 rid = r.get(username).decode('utf-8')
                 data = r.get(rid)
                 assert data is not None
                 return json.loads(data)
+        """
 
         types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE]
         with open_login_session() as session:
@@ -88,7 +96,7 @@ class CredentialsModel:
         return ri['reset_code']
 
     def reset_credentials(self, reset_code, password):
-        ri = self.get_indirect_reset_info(reset_code)
+        ri = self.get_indexed_reset_info(reset_code)
         uid = ri['uid']
         username = ri['username']
 
