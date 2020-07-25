@@ -3,22 +3,30 @@
     padding:0;
 }
 
-
-
 body {
     box-sizing: border-box;
     font-family: 'Roboto', sans-serif;
     -webkit-box-sizing: border-box; 
     -moz-box-sizing: border-box;   
     box-sizing: border-box;        
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
     flex-direction: column;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
     justify-content: space-between;
+    -moz-justify-content: space-between;
+    -webkit-justify-content: space-between;
+    -ms-justify-content: space-between;
     align-content: space-between;
+    -webkit-align-content: space-between;
+    -moz-align-content: space-between;
+    -ms-align-content: space-between;
     height: 100vh;
     min-height: 500px;
-    
-
 }
 
 .cabecera {
@@ -26,19 +34,19 @@ body {
     height: 60px;
     background: #222222;
     color: #9d9d9d;
-    display: flex;
+    display: -webkit-box;
     display: -webkit-flex;
-    display: -moz-flex;
+    display: -ms-flexbox;
+    display: flex;
     align-items: center;
     -webkit-align-items: center;
     -moz-align-items: center;
+    -ms-align-items: center;
     padding-left: 20px;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
--moz-box-sizing: border-box;    /* Firefox, other Gecko */
-box-sizing: border-box;         /* Opera/IE 8+ */
+    -webkit-box-sizing: border-box; 
+    -moz-box-sizing: border-box;    
+    box-sizing: border-box;     
   }
-
-
 
   .contenido {
     height: 100%;
@@ -47,21 +55,28 @@ box-sizing: border-box;         /* Opera/IE 8+ */
     -webkit-background-size: cover;
     background-size: cover;
     min-height: 450px;
-
   }
-
 
 .pie {
   height: 25px;
   background: #222222;
   color: #9d9d9d;
-  display: flex;
+  display: -webkit-box;
   display: -webkit-flex;
-  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
   flex-direction: row;
+  -webkit-flex-direction: row;
+  -moz-flex-direction: row;
+  -ms-flex-direction: row;
   justify-content: space-between;
+  -webkit-justify-content: space-between;
+  -moz-justify-content: space-between;
+  -ms-justify-content: space-between;
+  align-items: center;
   -webkit-align-items: center;
   -moz-align-items: center;
+  -ms-align-items: center;
   padding:0 20px 0 20px ;
   font-size: 11px;
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
@@ -83,6 +98,6 @@ box-sizing: border-box;         /* Opera/IE 8+ */
     background-image: none;
   }
   .cabecera {
-  display: none;
+    display: none;
   }
 }

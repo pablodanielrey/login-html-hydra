@@ -1,33 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- <div class="row">
-    ingresa tu dni
-    {% from "_formhelpers.html" import submit, input_text %}
-
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        {{ input_text(form.username) }}
-        {{ submit(form.submit) }}
-    </form>
-</div> -->
-
 <div class="pantalla">
     <div class="contenedor">
-        <div class="iconoError"> <i class="large material-icons">lock_outline
-        </i> </div>
-        <!-- <div class="tituloError"><h5> <B>ERROR</B></h5></div> -->
-        <div class="tituloError"><B>RECUPERAR CONTRASEÑA</B></div>
+        <div class="iconoMensaje"> <i class="large material-icons">lock_outline</i> </div>
+        <div class="titulos"><B>RECUPERAR CONTRASEÑA</B></div>
         <div class="mensaje">Ingrese su DNI o Pasaporte para iniciar el proceso de recupero de contraseña. </div>
         {% from "_formhelpers.html" import submit, input_text %}
-        
         <form class="formulario" action="" method="post" novalidate>
             {{ form.hidden_tag() }}
             {{ input_text(form.username) }}
             {{ submit(form.submit) }}
         </form>
-
     </div>
 </div>
-
-
 {% endblock %}

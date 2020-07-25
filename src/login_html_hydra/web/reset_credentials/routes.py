@@ -8,7 +8,7 @@ from .forms import InputUsername, InputCode, InputCredentials
 
 @bp.route('/error', methods=['GET'])
 def error():
-    error = 'se ha producido un error enviadno el código'
+    error = 'se ha producido un error enviando el código'
     return render_template('error.html', error=error, version=config.version)
 
 

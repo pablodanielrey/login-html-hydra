@@ -1,33 +1,52 @@
 .pantalla {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
-    height: 100%;
-
     align-items: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
     justify-content: center;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    -ms-justify-content: center;
+    -webkit-box-sizing: border-box; 
+    -moz-box-sizing: border-box;   
+    box-sizing: border-box;  
+    height: 100%;
 }
 
 .contenedor {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
     flex-direction: column;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
     background-color: white;
     width: 400px;
     min-height: 422px;
     padding: 40px;
     -webkit-box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
     box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
+    -webkit-box-sizing: border-box; 
+    -moz-box-sizing: border-box;    
+    box-sizing: border-box;        
 }
 
 .formulario{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
     flex-direction: column;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
     margin-top: 20px;
-
 }
 
 .inputFormulario {
@@ -35,10 +54,8 @@
     background-color: red;
 }
 
-
 .imgLogo {
     width: 100%;
-
 }
 
 .btn {
@@ -48,8 +65,7 @@
 .btnReset {
     margin: 0 auto;
     margin-top: 10px;
-
-  }
+}
 
 .btn label {
     font-size: 14px;
@@ -89,10 +105,13 @@ label {
   }
 
 @media screen and (max-width: 718px) {
-    
+
     .pantalla {
         padding: 30px;
-align-items: flex-start;
+    align-items: flex-start;
+    -webkit-align-items: flex-start;
+    -moz-align-items: flex-start;
+    -ms-align-items: flex-start;
     }
 
     .contenedor {
@@ -104,32 +123,32 @@ align-items: flex-start;
         -moz-box-sizing: border-box;    /* Firefox, other Gecko */
         box-sizing: border-box;         /* Opera/IE 8+ */
     }
-
 }
     
 
 /* ******************* ERROR GENERAL********************** */
 
-.iconoError {
+.iconoMensaje {
     text-align: center;
-
 } 
 
-.tituloError {
+.titulos {
     text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
 }
 
 .mensaje {
     text-align: center;
 }
 
-.detalleError {
+.detalleMensaje {
     font-weight: 300;
     margin-top: 40px;
     padding: 10px;
-    background-color: #F4F4F4;
+    background-color: #d4d4d4;
     border: 1px solid #EAEAEA;
-
 }
 
 /* ************************ CONSENT ***************************** */
@@ -141,4 +160,18 @@ align-items: flex-start;
 
 .progress .indeterminate {
     background-color: #1565c0 !important;
+}
+
+
+/* ************************* EXTRAS ********************************* */
+
+
+.correos {
+    font-weight: bold;
+    text-align: center;
+}
+
+.mensajeSecundario {
+    font-size: 12px;
+    margin-top: 10px;
 }
