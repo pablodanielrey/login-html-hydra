@@ -57,28 +57,23 @@ def input_code(cid):
         emails = ri['mails']
 
         form = InputCode()
-        form.cid.data = cid
         return render_template('input_code.html', form=form, emails=emails, version=config.version)
 
     except Exception as e:
         logging.exception(e)
         return render_template('error.html', error='Error de reseteo', version=config.version), 400    
 
-@bp.route('/code', methods=['POST'])
-def input_code_post():
+@bp.route('/code/<cid>', methods=['POST'])
+def input_code_post(cid):
     try:
+        assert cid is not None
         form = InputCode()
         if form.validate_on_submit():
-            logging.info(f'reseteo de clave {form.code.data} {form.cid.data}')
-            cid = form.cid.data
+            logging.info(f'reseteo de clave {form.code.data} {cid}')
             code = form.code.data
             reset_code = credentialsModel.verify_code(cid, code)
-            return redirect(url_for('reset_credentials.input_credentials', code=reset_code)), 302
+            return redirect(url_for('reset_credentials.input_credentials', cid=reset_code)), 302
         else:
-            if not form.cid.data:
-                raise Exception('error en reseteo')
-
-            cid = form.cid.data
             ri = credentialsModel.get_reset_info(cid)
             emails = ri['mails']
             return render_template('input_code.html', form=form, emails=emails, version=config.version)
@@ -92,30 +87,25 @@ def input_code_post():
     paso 3 - ingresa las credenciales nuevas
 """
 
-@bp.route('/credentials/<code>', methods=['GET'])
-def input_credentials(code):
+@bp.route('/credentials/<cid>', methods=['GET'])
+def input_credentials(cid):
     form = InputCredentials()
-    form.cid.data = code
     return render_template('input_credentials.html', form=form, version=config.version)
 
-@bp.route('/credentials', methods=['POST'])
-def input_credentials_post():
+@bp.route('/credentials/<cid>', methods=['POST'])
+def input_credentials_post(cid):
     try:
+        assert cid is not None
         form = InputCredentials()
         if form.validate_on_submit():
-            logging.info(f'reseteo de clave {form.cid.data}')
-            cid = form.cid.data
+            logging.info(f'reseteo de clave {cid}')
             password = form.password.data
             password2 = form.password2.data
             if password != password2:
                 return render_template('input_credentials.html', form=form, version=config.version)
             credentialsModel.reset_credentials(cid, password)
-            return redirect(url_for(success)), 302
+            return redirect(url_for('reset_credentials.success')), 302
         else:
-            if not form.cid.data:
-                raise Exception('error en reseteo')
-
-            cid = form.cid.data
             ri = credentialsModel.get_reset_info(cid)
             emails = ri['mails']
             return render_template('input_code.html', form=form, emails=emails, version=config.version)
