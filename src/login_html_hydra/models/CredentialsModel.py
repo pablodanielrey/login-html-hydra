@@ -78,9 +78,6 @@ class CredentialsModel:
             'uid': uid
         }
 
-        logging.getLogger().setLevel(logging.DEBUG)
-        logging.info(reset)
-
         with open_redis_session() as r:
             data = json.dumps(reset)
             timeout = timedelta(minutes=20)

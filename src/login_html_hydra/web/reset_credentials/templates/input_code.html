@@ -15,7 +15,7 @@
         </div>
         {% from "_formhelpers.html" import submit, input_text %}
         
-        <form class="formulario" action="" method="post" novalidate>
+        <form class="formulario" action="/reset_credentials/code" method="post" novalidate>
             {{ form.hidden_tag() }}
             {{ form.cid }}
             {{ input_text(form.code) }}
