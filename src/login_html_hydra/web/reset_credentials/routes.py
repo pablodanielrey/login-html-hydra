@@ -9,6 +9,16 @@ from login_html_hydra.models.CredentialsModel import credentialsModel
 
 
 """
+    debug 
+"""
+
+@bp.route('/debug/<username>', methods=['GET'])
+def debug(username):
+    ri = credentialsModel.get_indexed_reset_info(username)
+    return render_template('debug.html', ri=ri, version=config.version)
+
+
+"""
     paso 1 -- ingresa su usuario
 """
 

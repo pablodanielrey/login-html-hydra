@@ -1,3 +1,4 @@
+import logging
 import redis
 import json
 import uuid
@@ -76,6 +77,9 @@ class CredentialsModel:
             'reset_code': reset_code,
             'uid': uid
         }
+
+        logging.getLogger().setLevel(logging.DEBUG)
+        logging.info(reset)
 
         with open_redis_session() as r:
             data = json.dumps(reset)
