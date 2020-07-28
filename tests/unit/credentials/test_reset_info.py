@@ -12,6 +12,12 @@ def test_generate_invalid_user_reset_info(config, credentials_model):
     with pytest.raises(Exception):
         ri = model.generate_reset_info(username)
 
+    username = str(uuid.uuid4())
+    if config['credentials'].username != username:
+        with pytest.raises(Exception):
+            ri = model.generate_reset_info(username)
+
+
 def test_generate_valid_user_reset_info(config, credentials_model):
     username = config['credentials'].username
     model = credentials_model
@@ -40,8 +46,14 @@ def test_generate_valid_user_reset_info(config, credentials_model):
     assert cid == ro['id']
     assert ri['uid'] == ro['uid']
     assert ri['username'] == ro['username']
-
  
+
+def test_null_get_indexed_reset_info(credentials_model):
+    model = credentials_model
+    with pytest.raises(Exception):
+        r = model.get_indexed_reset_info(None)
+
+
 def test_generate_valid_user_reset_info_cache(config, credentials_model):
     username = config['credentials'].username
     model = credentials_model
