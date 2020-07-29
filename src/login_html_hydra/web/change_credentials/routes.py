@@ -9,7 +9,7 @@ from .forms import ChangeCredentialsForm
 @bp.route('/', methods=['GET'])
 def change_credentials_get():
     form = ChangeCredentialsForm()
-    return render_template('change_credentials.html', form=form, version=config.version)
+    return render_template('change_credentials.html', form=form, version=config.version), 200
 
 @bp.route('/', methods=['POST'])
 def change_credentials_post():
@@ -18,13 +18,13 @@ def change_credentials_post():
         p1 = form.password2.data
         p2 = form.password2_confirmation.data
         if p1 == p2:
-            logging.info(f'claves {form.password.data} {form.password2.data}')
-            return render_template('change_credentials_ok.html', version=config.version)
+            logging.info(f'claves {p1} {p2}')
+            return render_template('change_credentials_ok.html', version=config.version), 200
         else:
             logging.info(f'claves inválidas')
-            return render_template('change_credentials_error.html', error='verifique las claves', version=config.version)
+            return render_template('change_credentials_error.html', error='verifique las claves', version=config.version), 400
     else:
-        return render_template('change_credentials_error.html', error='faltan datos requeridos', version=config.version)
+        return render_template('change_credentials_error.html', error='faltan datos requeridos', version=config.version), 400
 
 
 """
