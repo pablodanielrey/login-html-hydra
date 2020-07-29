@@ -14,7 +14,7 @@ class ChangeCredentialsModel:
         change = {
             'uid': config['uid'],
             'username': config['username'],
-            'password': config['password']
+            'return_url': config['return_url']
         }
 
         with open_redis_session() as r:
@@ -25,20 +25,21 @@ class ChangeCredentialsModel:
         return code
 
 
-    def change_credentials(self, code, password):
-
+    def change_credentials(self, code, credentials):
+        """
+            TODO Ver logitud de contraseña donde agregar y como devolver error
+        """
         with open_redis_session() as r:
             data = r.get(code)
-            change = json.loads(data)
+            change = json.loads(data)            
 
         uid = change['uid']
         username = change['username']
-        credentials = change['password']
-
+        return_url = change['return_url']
+        
         with open_login_session() as session:
             loginModel.change_credentials(session, uid, username, credentials)
-
-        return 'https://lsdfsdfsdf'
-    
+        
+        return return_url
 
 changeCredentialsModel = ChangeCredentialsModel()

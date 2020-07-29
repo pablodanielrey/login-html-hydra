@@ -12,8 +12,7 @@ def change_credentials_get(code):
     try:
         assert code is not None
         form = ChangeCredentialsForm()
-        return render_template('change_credentials.html', form=form, version=config.version), 200
-        
+        return render_template('change_credentials.html', form=form, version=config.version), 200        
     except Exception as e:
         return render_template('change_credentials_error.html', error='error', version=config.version), 400
 
