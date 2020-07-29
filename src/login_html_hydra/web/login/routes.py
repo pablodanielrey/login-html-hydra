@@ -1,12 +1,16 @@
 import logging
 logging.getLogger().setLevel(logging.INFO)
 
-from flask import render_template, flash, redirect,request, Markup, url_for, request
+from flask import render_template, flash, request, Markup, url_for, request, Response
 from . import bp, config
 
 from .forms import LoginForm
 
 from login_html_hydra.models.LoginHydraModel import loginHydraModel
+
+def _my_redirect(url):
+    r = Response(f"<html><head><meta http-equiv=\"Refresh\" content=\"10; URL={url}\"></head><body>{url}</body></html>")
+    return r
 
 @bp.route('/', methods=['GET'])
 def login():
@@ -23,7 +27,7 @@ def login():
         if skip:
             uid = data['sub']
             redirect_url = loginHydraModel.accept_login_challenge(challenge, uid)
-            return redirect(redirect_url), 302
+            return _my_redirect(redirect_url)
         else:
             form = LoginForm()
             form.challenge.data = challenge
@@ -32,6 +36,7 @@ def login():
     except Exception as e:
         logging.exception(e)
         return render_template('error.html', error='Error de ingreso', version=config.version), 400
+
 
 @bp.route('/', methods=['POST'])
 def login_post():
@@ -47,7 +52,8 @@ def login_post():
             password = form.password.data
             redirect_url = loginHydraModel.login(challenge, username, password)
             assert redirect_url is not None
-            return redirect(redirect_url), 302
+            #red = redirect(redirect_url, code=200)
+            return _my_redirect(redirect_url)
         else:
             logging.warn('error en formulario')
             challenge = form.challenge.data
