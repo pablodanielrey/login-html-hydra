@@ -5,7 +5,14 @@ from . import bp, config
 
 from .forms import InputUsername, InputCode, InputCredentials
 
+<<<<<<< HEAD
 from login_html_hydra.models.CredentialsModel import credentialsModel
+=======
+@bp.route('/error', methods=['GET'])
+def error():
+    error = 'se ha producido un error enviando el código'
+    return render_template('error.html', error=error, version=config.version)
+>>>>>>> origin
 
 
 """

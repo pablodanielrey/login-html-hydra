@@ -1,13 +1,11 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="pantalla">
     <div class="contenedor">
-        <div class="iconoError"> <i class="large material-icons">error_outline</i> </div>
-        <!-- <div class="tituloError"><h5> <B>ERROR</B></h5></div> -->
-        <div class="tituloError"><B>SE HA PRODUCIDO UN ERROR INESPERADO.</B></div>
+        <div class="iconoMensaje"> <i class="large material-icons">error_outline</i> </div>
+        <div class="titulos"><B>SE HA PRODUCIDO UN ERROR INESPERADO.</B></div>
         <div class="mensaje">Por favor intente nuevamente... </div>
-        <div class="detalleError">
+        <div class="detalleMensaje">
             <span>Detalle del error</span><br>
             <b>{{ error }}</b><br>
             <span>Versión</span><br>
