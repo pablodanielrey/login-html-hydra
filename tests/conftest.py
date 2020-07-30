@@ -6,6 +6,7 @@ import datetime
 import logging
 import sys
 import redis
+import socket
 
 def pytest_addoption(parser):
     group = parser.getgroup('environ')
@@ -35,17 +36,38 @@ def config(request):
     raise Exception('debe seleccionar un environment')
 
 
+def is_open(ip,port):
+    logging.debug(f'{ip} {port}')
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(1)
+    try:
+        s.connect((ip, int(port)))
+        s.shutdown(socket.SHUT_RDWR)
+        s.close()
+        return True
+    except:
+        return False
+
+def wait_until_open(serv):
+    while not is_open(serv.hostname, serv.host_port):
+        time.sleep(1)
+
 @pytest.fixture(scope='module')
 def wait_for_api(module_scoped_container_getter):
-    """ espera hasta que los contendores estén levantados y se pueda conectar a la api correctamente """
-    time.sleep(10)
 
     redis = module_scoped_container_getter.get('redis').network_info[0]
+    wait_until_open(redis)
+
     users = module_scoped_container_getter.get('db_users').network_info[0]
+    wait_until_open(users)
+    
     login = module_scoped_container_getter.get('db_login').network_info[0]
+    wait_until_open(login)
 
     service = module_scoped_container_getter.get("hydra").network_info[0]
-    hydra_api_url = f"http://{service.hostname}:{service.host_port}/"    
+    wait_until_open(service)
+
+    hydra_api_url = f"http://{service.hostname}:{service.host_port}/"
 
     data = {
         'hydra_api_url': hydra_api_url,

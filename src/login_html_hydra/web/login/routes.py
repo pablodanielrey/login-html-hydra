@@ -52,7 +52,6 @@ def login_post():
             password = form.password.data
             redirect_url = loginHydraModel.login(challenge, username, password)
             assert redirect_url is not None
-            #red = redirect(redirect_url, code=200)
             return _my_redirect(redirect_url)
         else:
             logging.warn('error en formulario')
