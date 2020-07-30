@@ -57,7 +57,7 @@ FROM = 'sistemas@econo.unlp.edu.ar'
 
 def _get_api(_from):
     creds = get_credentials('/tmp/credentials.json', _from, SCOPES)
-    api = get_api('gmail', 'v1', creds)
+    api = get_api('gmail', 'v1', creds)     
     return api
 
 mailsModel = MailsModel(_get_api(FROM))
