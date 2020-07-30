@@ -2,7 +2,8 @@
 
 """
     https://github.com/googleapis/google-api-python-client/blob/master/docs/dyn/index.md
-
+    https://google-auth.readthedocs.io/en/latest/user-guide.html
+    https://developers.google.com/identity/protocols/oauth2/scopes
 """
 
 import httplib2
@@ -23,3 +24,5 @@ def get_api(api, version, credentials):
     http = credentials.authorize(httplib2.Http())
     service = build(api, version, http=http)
     return service
+
+

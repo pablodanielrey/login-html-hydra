@@ -34,3 +34,10 @@ services:
       - 4445:4445/tcp
     #network_mode: "host"
     command: "python /hydra_server.py"
+
+  google:
+    build: google_api_mock
+    ports:
+      - 7777:7777/tcp
+    #network_mode: "host"
+    command: "python /google_api_server.py"    

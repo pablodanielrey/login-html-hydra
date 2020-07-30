@@ -10,6 +10,9 @@ from .models import loginModel, usersModel
 
 class ResetCredentialsModel:
 
+    def __init__(self, mailsModel):
+        self.mailsModel = mailsModel
+
     def delete_reset_info(self, rid):
         with open_redis_session() as r:
             data = r.get(rid)
@@ -85,6 +88,11 @@ class ResetCredentialsModel:
             r.setex(reset_code, timeout, value=rid)
             r.setex(rid, timeout, value=data)
 
+
+        r = self.mailsModel.send_code(code, confirmed)
+        """ chequeo que las r esten ok, al menos una y si no se tira una exception """
+
+
         return reset
 
     def send_email(self, reset):
@@ -107,4 +115,6 @@ class ResetCredentialsModel:
 
         self.delete_reset_info(ri['id'])
 
-resetCredentialsModel = ResetCredentialsModel()
+
+from .MailsModel import mailsModel
+resetCredentialsModel = ResetCredentialsModel(mailsModel)

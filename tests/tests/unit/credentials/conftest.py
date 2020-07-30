@@ -1,9 +1,20 @@
 import pytest
 
+
 @pytest.fixture(scope='module')
-def credentials_model(prepare_dbs):
+def gmail_api():
+    return None
+
+@pytest.fixture(scope='module')
+def mails_model(gmail_api):
+    from login_html_hydra.models.MailsModel import MailsModel
+    model = MailsModel(gmail_api)
+    return model
+
+@pytest.fixture(scope='module')
+def credentials_model(prepare_dbs, mails_model):
     from login_html_hydra.models.ResetCredentialsModel import ResetCredentialsModel
-    model = ResetCredentialsModel()
+    model = ResetCredentialsModel(mails_model)
     return model
 
 @pytest.fixture(scope='module')
