@@ -17,18 +17,16 @@ setup(name='login-html-hydra',
           ],
           packages=find_packages(exclude=['contrib', 'docs', 'test*']),
           install_requires=[
-                            #'gunicorn',
+                            'users-model',
+                            'login-model',
                             'requests',
                             'Flask',
                             'flask-wtf',
-                            'users-model',
-                            'login-model',
                             'SQLAlchemy',
-                            'redis'
-                            #'flask_jsontools'
-                            #'flask-cors',
-                            #'Flask-OIDC',
-                            #'microservices_common>=2.0.7a1'
+                            'redis',
+                            'google-api-python-client',
+                            #'google_auth_oauthlib',
+                            'google-auth'
                           ],
           entry_points={
           }

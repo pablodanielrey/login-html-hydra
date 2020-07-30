@@ -8,7 +8,7 @@ from . import UserCredentials, MailTypes, User
 from .db import open_login_session, open_users_session, open_redis_session
 from .models import loginModel, usersModel
 
-class CredentialsModel:
+class ResetCredentialsModel:
 
     def delete_reset_info(self, rid):
         with open_redis_session() as r:
@@ -107,4 +107,4 @@ class CredentialsModel:
 
         self.delete_reset_info(ri['id'])
 
-credentialsModel = CredentialsModel()
+resetCredentialsModel = ResetCredentialsModel()
