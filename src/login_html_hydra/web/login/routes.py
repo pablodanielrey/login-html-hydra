@@ -9,7 +9,7 @@ from .forms import LoginForm
 from login_html_hydra.models.LoginHydraModel import loginHydraModel
 
 def _my_redirect(url):
-    r = Response(f"<html><head><meta http-equiv=\"Refresh\" content=\"10; URL={url}\"></head><body>{url}</body></html>")
+    r = Response(f"<html><head><meta http-equiv=\"Refresh\" content=\"0; URL={url}\"></head><body>redireccionando ... </body></html>")
     return r
 
 @bp.route('/', methods=['GET'])
