@@ -21,13 +21,21 @@ def test_invalid_code(reset_config, change_credentials_model):
     with pytest.raises(Exception):
         retorno = model.change_credentials(code, 'abcdefgh')
 
-def test_invalid_credentials(reset_config, change_credentials_model):
+def test_length_credentials(reset_config, change_credentials_model):
     model = change_credentials_model
 
     config = reset_config
-    code = model._generate_credentials(config)    
+    code = model._generate_credentials(config)
+
+    password = '2' * config['min_len']
+    retorno = model.change_credentials(code, password)
+    assert retorno is not None
+
+    invalid_password = password[:-1]
     with pytest.raises(Exception):
-        retorno = model.change_credentials(code, 'abcdef')
+        retorno = model.change_credentials(code, invalid_password)
+
+
 
 def test_change_credentials(reset_config, change_credentials_model):
     model = change_credentials_model

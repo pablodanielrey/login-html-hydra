@@ -2,8 +2,8 @@ import pytest
 
 @pytest.fixture(scope='module')
 def credentials_model(prepare_dbs):
-    from login_html_hydra.models.CredentialsModel import CredentialsModel
-    model = CredentialsModel()
+    from login_html_hydra.models.ResetCredentialsModel import ResetCredentialsModel
+    model = ResetCredentialsModel()
     return model
 
 @pytest.fixture(scope='module')
@@ -18,5 +18,6 @@ def reset_config():
     return {
         'uid': 'uidtest',
         'username': 'usernametest',
-        'return_url': 'return_urltest'
+        'return_url': 'return_urltest',
+        'min_len': 5
     }

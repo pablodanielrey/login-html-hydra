@@ -5,7 +5,7 @@ from . import bp, config
 
 from .forms import InputUsername, InputCode, InputCredentials
 
-from login_html_hydra.models.CredentialsModel import credentialsModel
+from login_html_hydra.models.ResetCredentialsModel import resetCredentialsModel
 
 
 """
@@ -14,7 +14,7 @@ from login_html_hydra.models.CredentialsModel import credentialsModel
 
 @bp.route('/debug/<username>', methods=['GET'])
 def debug(username):
-    ri = credentialsModel.get_indexed_reset_info(username)
+    ri = resetCredentialsModel.get_indexed_reset_info(username)
     return render_template('debug.html', ri=ri, version=config.version)
 
 
@@ -34,7 +34,7 @@ def input_username_post():
         if form.validate_on_submit():
             logging.info(f'reseteo de clave usando {form.username.data}')
             username = form.username.data
-            ri = credentialsModel.generate_reset_info(username)
+            ri = resetCredentialsModel.generate_reset_info(username)
             return redirect(url_for('reset_credentials.input_code', cid=ri['id'])), 302
         else:
             logging.warn('error en formulario')
@@ -53,7 +53,7 @@ def input_username_post():
 @bp.route('/code/<cid>', methods=['GET'])
 def input_code(cid):
     try:
-        ri = credentialsModel.get_reset_info(cid)
+        ri = resetCredentialsModel.get_reset_info(cid)
         emails = ri['mails']
 
         form = InputCode()
@@ -71,10 +71,10 @@ def input_code_post(cid):
         if form.validate_on_submit():
             logging.info(f'reseteo de clave {form.code.data} {cid}')
             code = form.code.data
-            reset_code = credentialsModel.verify_code(cid, code)
+            reset_code = resetCredentialsModel.verify_code(cid, code)
             return redirect(url_for('reset_credentials.input_credentials', cid=reset_code)), 302
         else:
-            ri = credentialsModel.get_reset_info(cid)
+            ri = resetCredentialsModel.get_reset_info(cid)
             emails = ri['mails']
             return render_template('input_code.html', form=form, emails=emails, version=config.version)
 
@@ -103,10 +103,10 @@ def input_credentials_post(cid):
             password2 = form.password2.data
             if password != password2:
                 return render_template('input_credentials.html', form=form, version=config.version)
-            credentialsModel.reset_credentials(cid, password)
+            resetCredentialsModel.reset_credentials(cid, password)
             return redirect(url_for('reset_credentials.success')), 302
         else:
-            ri = credentialsModel.get_reset_info(cid)
+            ri = resetCredentialsModel.get_reset_info(cid)
             emails = ri['mails']
             return render_template('input_code.html', form=form, emails=emails, version=config.version)
 
