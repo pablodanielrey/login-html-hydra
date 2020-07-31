@@ -20,17 +20,17 @@ class MailsModel:
         self.env = Environment(loader=PackageLoader('login_html_hydra.models.templates','.'))
         self.gmail = gmail
 
-    def send_email(self, _from, to, mail):
+    def send_email(self, _from, mail):
         urlsafe = base64.urlsafe_b64encode(mail.as_string().encode()).decode()
         r = self.gmail.users().messages().send(userId=_from, body={'raw':urlsafe}).execute()
         return r
 
-    def send_code(self, code, tos=[]):
+    def send_code(self, code, user, tos=[]):
         _from = 'sistemas@econo.unlp.edu.ar'
         subject = 'Reseteo de Clave FCE'
         
         code_tmpl = self._load_code_template()
-        body = code_tmpl.render(code=code)
+        body = code_tmpl.render(code=code,user=user)
 
         responses = []
         for to in tos:
@@ -38,7 +38,7 @@ class MailsModel:
             mail['to'] = to
             mail['from'] = _from
             mail['subject'] = Header(subject, 'utf-8')
-            r = self.send_email(_from, to, mail)
+            r = self.send_email(_from, mail)
             responses.append(r)
         return responses
 
@@ -56,7 +56,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.send']
 FROM = 'sistemas@econo.unlp.edu.ar'
 
 def _get_api(_from):
-    creds = get_credentials('/tmp/credentials.json', _from, SCOPES)
+    creds = get_credentials('/src/gitlab/stacks/fce/emails/credentials/credentials.json', _from, SCOPES)
     api = get_api('gmail', 'v1', creds)     
     return api
 
