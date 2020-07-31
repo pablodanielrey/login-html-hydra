@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+
+<head>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <meta http-equiv="Refresh" content="0; URL={{url}}">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- ACA se incluyen los css de todo. desde la carpeta static -->
+    <link rel="stylesheet" href='/static/css/base.css'>
+    <link rel="stylesheet" href='/static/css/login/login.css'>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+
+    <title>FCE | Acceder</title>
+</head>
+
+<body>
+
+    <header class="cabecera">
+        <div>FCE | Acceso</div>
+    </header>
+
+    <section class="contenido">
+        <div class="pantalla">
+            <div>
+                <span>
+                    Redireccionando ...
+                </span>
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="pie">
+        <div>
+            <div class="footerPrincipal"><b>DiTESI</b> | Dirección de Tecnologías y Sistemas Informáticos | Facultad de
+                Ciencias Económicas | UNLP | Calle 6 Nº 777</div>
+            <div class="footerAlternativo"> <b>DiTESI</b> | FCE | UNLP </div>
+        </div>
+        <div>Versión: <b>{{version}}</b></div>
+        {% block footer %} {% endblock %}
+    </footer>
+</body>
+
+</html>

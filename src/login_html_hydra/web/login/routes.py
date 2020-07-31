@@ -8,10 +8,6 @@ from .forms import LoginForm
 
 from login_html_hydra.models.LoginHydraModel import loginHydraModel
 
-def _my_redirect(url):
-    r = Response(f"<html><head><meta http-equiv=\"Refresh\" content=\"0; URL={url}\"></head><body>redireccionando ... </body></html>")
-    return r
-
 @bp.route('/', methods=['GET'])
 def login():
     """
@@ -27,7 +23,7 @@ def login():
         if skip:
             uid = data['sub']
             redirect_url = loginHydraModel.accept_login_challenge(challenge, uid)
-            return _my_redirect(redirect_url)
+            return render_template('redirect.html', url=redirect_url,version=config.version)
         else:
             form = LoginForm()
             form.challenge.data = challenge
@@ -52,7 +48,7 @@ def login_post():
             password = form.password.data
             redirect_url = loginHydraModel.login(challenge, username, password)
             assert redirect_url is not None
-            return _my_redirect(redirect_url)
+            return render_template('redirect.html', url=redirect_url,version=config.version)
         else:
             logging.warn('error en formulario')
             challenge = form.challenge.data
