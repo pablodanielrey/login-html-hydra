@@ -27,6 +27,7 @@ setup(name='login-html-hydra',
                             'google-api-python-client',
                             #'google_auth_oauthlib',
                             'google-auth',
+                            'google-auth-httplib2',
                             'oauth2client'
                           ],
           entry_points={

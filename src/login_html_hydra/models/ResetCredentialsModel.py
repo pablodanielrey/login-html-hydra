@@ -10,8 +10,9 @@ from .models import loginModel, usersModel
 
 class ResetCredentialsModel:
 
-    def __init__(self, mailsModel):
+    def __init__(self, mailsModel, googleSyncModel):
         self.mailsModel = mailsModel
+        self.googleSyncModel = googleSyncModel
 
     def delete_reset_info(self, rid):
         with open_redis_session() as r:
@@ -40,7 +41,6 @@ class ResetCredentialsModel:
             assert data is not None
             return json.loads(data)
 
-
     def generate_reset_info(self, username):
         try:
             data = self.get_indexed_reset_info(username)
@@ -62,6 +62,7 @@ class ResetCredentialsModel:
             uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one()
             uid = uc.user_id
         with open_users_session() as session:
+            # pylint: disable=no-member
             user = session.query(User).filter(User.id == uid).one()
             confirmed = [m.email for m in user.mails if m.confirmed and m.deleted == None and m.type in types]
 
@@ -90,7 +91,7 @@ class ResetCredentialsModel:
 
             try:
                 r = self.mailsModel.send_code(code, confirmed)
-                """ analizo las r """
+                """ me falta analizar si existe alguna respuesta inválida para el envío de correos """
                 
             except Exception as e:
                 r.delete(rid)
@@ -113,12 +114,19 @@ class ResetCredentialsModel:
         uid = ri['uid']
         username = ri['username']
 
+        """ si tiene usuario en google intento cambiar primero las credenciales remotamente """
+        for mail in ri['mails']:
+            if 'econo.unlp.edu.ar' in mail:
+                r = self.googleSyncModel.sync_login(username, password)
+                assert r is not None
+                break
+
         with open_login_session() as session:
             loginModel.change_credentials(session, uid, username, password)
             session.commit()
 
         self.delete_reset_info(ri['id'])
 
-
 from .MailsModel import mailsModel
-resetCredentialsModel = ResetCredentialsModel(mailsModel)
+from .google.GoogleSyncModel import googleSyncModel
+resetCredentialsModel = ResetCredentialsModel(mailsModel, googleSyncModel)

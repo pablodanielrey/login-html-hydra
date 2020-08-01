@@ -1,6 +1,7 @@
 """
     http://googleapis.github.io/google-api-python-client/docs/dyn/gmail_v1.html
     https://developers.google.com/identity/protocols/oauth2/scopes#gmail
+    https://github.com/googleapis/google-api-python-client/blob/master/docs/oauth-server.md
 
 """
 
@@ -56,7 +57,9 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.send']
 FROM = 'sistemas@econo.unlp.edu.ar'
 
 def _get_api(_from):
-    creds = get_credentials('/src/gitlab/stacks/fce/emails/credentials/credentials.json', _from, SCOPES)
+    creds = get_credentials('/src/gitlab/kubernetes/servicios/oidc/login-html/adminecono-173018-66641a886c34.json', _from, SCOPES)
+    #creds = get_credentials('/src/gitlab/kubernetes/servicios/oidc/login-html/adminecono-173018-b77dfc44f95a.json', _from, SCOPES)
+    #creds = get_credentials('/src/gitlab/stacks/fce/emails/credentials/credentials.json', _from, SCOPES)
     api = get_api('gmail', 'v1', creds)     
     return api
 
