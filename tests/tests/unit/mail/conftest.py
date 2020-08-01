@@ -16,7 +16,7 @@ def mails_model(gmail_api):
 def generate_data():
     return {
         'code': 'ABcDeF5',
-        'tos': ['miguel.macagno@gmail.com','miguel.macagno@econo.unlp.edu.ar'],
+        'tos': ['pablodanielrey@gmail.com','pablo.rey@econo.unlp.edu.ar'],
         'user': User()
     }
 

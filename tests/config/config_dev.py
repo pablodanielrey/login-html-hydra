@@ -6,8 +6,8 @@ def get_config():
     u.firstname = 'username'
     u.lastname = 'lastname'
     u.dni = '21324234'
-    u.imail = 'testuser@econo.unlp.edu.ar'
-    u.email = 'testuser@gmail.com'
+    u.imail = 'ditesi@econo.unlp.edu.ar'
+    u.email = 'ditesi@econo.unlp.edu.ar'
 
     p = PassConf()
     p.username = 'secretusername'

@@ -88,9 +88,13 @@ class ResetCredentialsModel:
             r.setex(reset_code, timeout, value=rid)
             r.setex(rid, timeout, value=data)
 
-
-        r = self.mailsModel.send_code(code, confirmed)
-        """ chequeo que las r esten ok, al menos una y si no se tira una exception """
+            try:
+                r = self.mailsModel.send_code(code, confirmed)
+                """ analizo las r """
+                
+            except Exception as e:
+                r.delete(rid)
+                raise e
 
 
         return reset
