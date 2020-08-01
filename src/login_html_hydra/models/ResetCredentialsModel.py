@@ -44,11 +44,11 @@ class ResetCredentialsModel:
             return json.loads(data)
 
     def generate_reset_info(self, username):
-        #try:
-        #    data = self.get_indexed_reset_info(username)
-        #    return data
-        #except Exception:
-        #    pass
+        try:
+            data = self.get_indexed_reset_info(username)
+            return data
+        except Exception:
+            pass
 
         """
         with open_redis_session() as r:
