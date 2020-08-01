@@ -2,6 +2,7 @@ import logging
 import redis
 import json
 import uuid
+import re
 from datetime import timedelta, datetime
 
 from . import UserCredentials, MailTypes, User
@@ -13,6 +14,7 @@ class ResetCredentialsModel:
     def __init__(self, mailsModel, googleSyncModel):
         self.mailsModel = mailsModel
         self.googleSyncModel = googleSyncModel
+        self.r = re.compile(r"""^\d+$""")
 
     def delete_reset_info(self, rid):
         with open_redis_session() as r:
@@ -42,11 +44,11 @@ class ResetCredentialsModel:
             return json.loads(data)
 
     def generate_reset_info(self, username):
-        try:
-            data = self.get_indexed_reset_info(username)
-            return data
-        except Exception:
-            pass
+        #try:
+        #    data = self.get_indexed_reset_info(username)
+        #    return data
+        #except Exception:
+        #    pass
 
         """
         with open_redis_session() as r:
@@ -57,7 +59,7 @@ class ResetCredentialsModel:
                 return json.loads(data)
         """
 
-        types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE]
+        types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE, MailTypes.INSTITUTIONAL]
         with open_login_session() as session:
             uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one()
             uid = uc.user_id
@@ -65,6 +67,7 @@ class ResetCredentialsModel:
             # pylint: disable=no-member
             user = session.query(User).filter(User.id == uid).one()
             confirmed = [m.email for m in user.mails if m.confirmed and m.deleted == None and m.type in types]
+            user_data = {'firstname':user.firstname, 'lastname': user.lastname}
 
         if len(confirmed) <= 0:
             raise Exception(f'{username} no tiene cuentas alternativas confirmadas')
@@ -90,7 +93,7 @@ class ResetCredentialsModel:
             r.setex(rid, timeout, value=data)
 
             try:
-                r = self.mailsModel.send_code(code, confirmed)
+                r = self.mailsModel.send_code(code, user=user_data, tos=confirmed)
                 """ me falta analizar si existe alguna respuesta inválida para el envío de correos """
                 
             except Exception as e:
@@ -117,6 +120,8 @@ class ResetCredentialsModel:
         """ si tiene usuario en google intento cambiar primero las credenciales remotamente """
         for mail in ri['mails']:
             if 'econo.unlp.edu.ar' in mail:
+                if not self.r.match(username):
+                    raise Exception('el usuario no cumple con los parámetros establecidos')
                 r = self.googleSyncModel.sync_login(username, password)
                 assert r is not None
                 break
