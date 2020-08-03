@@ -9,7 +9,9 @@ import uuid
 import logging
 import json
 
+import googleapiclient
 
+from login_html_hydra.models.ResetCredentialsModel import InvalidCredentials
 
 class GoogleSyncModel:
 
@@ -28,9 +30,16 @@ class GoogleSyncModel:
         data = {}
         data["changePasswordAtNextLogin"] = False
         data['password'] = credentials
-        r = self.service.users().update(userKey=usr,body=data).execute()
-        if not r:
-            raise Exception(r.response)
+        try:
+            r = self.service.users().update(userKey=usr,body=data).execute()
+            if not r:
+                raise Exception(r.response)
+
+        except googleapiclient.errors.HttpError as e:
+            if e.resp.status == 400:
+                raise InvalidCredentials()
+            else:
+                raise e
 
         return r
 

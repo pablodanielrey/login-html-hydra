@@ -9,6 +9,12 @@ from . import UserCredentials, MailTypes, User
 from .db import open_login_session, open_users_session, open_redis_session
 from .models import loginModel, usersModel
 
+class IncorrectCodeException(Exception):
+    pass
+
+class InvalidCredentials(Exception):
+    pass
+
 class ResetCredentialsModel:
 
     def __init__(self, mailsModel, googleSyncModel):
@@ -109,7 +115,7 @@ class ResetCredentialsModel:
     def verify_code(self, cid, code):
         ri = self.get_reset_info(cid)
         if ri['code'] != code:
-            raise Exception('Código incorrecto')
+            raise IncorrectCodeException('Código incorrecto')
         return ri['reset_code']
 
     def reset_credentials(self, reset_code, password):
