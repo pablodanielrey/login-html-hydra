@@ -1,6 +1,6 @@
 import os
 
-version = '0.0.3'
+version = '0.0.4'
 
 #CONFIG DE USERS
 class UserEnv:
@@ -25,3 +25,7 @@ class HydraEnv:
 class RedisEnv:
     HOST = os.environ.get('REDIS_HOST', '0.0.0.0')
     PORT = os.environ.get('REDIS_PORT', '6379')
+
+
+class CredentialsEnv:
+    PATH = os.environ.get('CREDENTIALS_PATH', '/credentials/credentials.json')

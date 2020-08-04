@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name='login-html-hydra',
-          version='0.0.3',
+          version='0.0.4',
           description='aplicación de consent y logín de hydra',
           url='https://github.com/pablodanielrey/login-html-hydra',
           author='Desarrollo DiTeSi, FCE',

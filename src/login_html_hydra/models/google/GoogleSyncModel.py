@@ -46,13 +46,15 @@ class GoogleSyncModel:
 
 """ obtengo al api de gmail e instancio el modelo de mails """
 
+from login_html_hydra import config
 from .Google import get_api, get_credentials
 
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user']
 FROM = 'sistemas@econo.unlp.edu.ar'
 
 def _get_api(_from):
-    creds = get_credentials('/credentials/credentials.json', _from, SCOPES)
+    path = config.CredentialsEnv.PATH
+    creds = get_credentials(path, _from, SCOPES)
     api = get_api('admin', 'directory_v1', creds)
     return api
 

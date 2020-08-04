@@ -51,13 +51,15 @@ class MailsModel:
 
 """ obtengo al api de gmail e instancio el modelo de mails """
 
+from login_html_hydra import config
 from .google.Google import get_credentials, get_api
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
 FROM = 'sistemas@econo.unlp.edu.ar'
 
 def _get_api(_from):
-    creds = get_credentials('/credentials/credentials.json', _from, SCOPES)
+    path = config.CredentialsEnv.PATH
+    creds = get_credentials(path, _from, SCOPES)
     api = get_api('gmail', 'v1', creds)     
     return api
 
