@@ -12,8 +12,17 @@ from .models import loginModel, usersModel
 class IncorrectCodeException(Exception):
     pass
 
+
 class InvalidCredentials(Exception):
     pass
+
+class MailsNotFound(Exception):
+    pass
+
+
+class UserNotFound(Exception):
+    pass
+
 
 class ResetCredentialsModel:
 
@@ -65,18 +74,21 @@ class ResetCredentialsModel:
                 return json.loads(data)
         """
 
-        types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE, MailTypes.INSTITUTIONAL]
-        with open_login_session() as session:
-            uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one()
-            uid = uc.user_id
-        with open_users_session() as session:
-            # pylint: disable=no-member
-            user = session.query(User).filter(User.id == uid).one()
-            confirmed = [m.email for m in user.mails if m.confirmed and m.deleted == None and m.type in types]
-            user_data = {'firstname':user.firstname, 'lastname': user.lastname}
+        try:
+            types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE, MailTypes.INSTITUTIONAL]
+            with open_login_session() as session:
+                uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one()
+                uid = uc.user_id
+            with open_users_session() as session:
+                # pylint: disable=no-member
+                user = session.query(User).filter(User.id == uid).one()
+                confirmed = [m.email for m in user.mails if m.confirmed and m.deleted == None and m.type in types]
+                user_data = {'firstname':user.firstname, 'lastname': user.lastname}
+        except Exception as e1:
+            raise UserNotFound()
 
         if len(confirmed) <= 0:
-            raise Exception(f'{username} no tiene cuentas alternativas confirmadas')
+            raise MailsNotFound()
 
         code = str(uuid.uuid4()).replace('-','')[:5]
         rid = str(uuid.uuid4()).replace('-','')
@@ -105,7 +117,6 @@ class ResetCredentialsModel:
             except Exception as e:
                 r.delete(rid)
                 raise e
-
 
         return reset
 

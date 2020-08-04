@@ -5,7 +5,7 @@ from . import bp, config
 
 from .forms import InputUsername, InputCode, InputCredentials
 
-from login_html_hydra.models.ResetCredentialsModel import IncorrectCodeException, InvalidCredentials, resetCredentialsModel
+from login_html_hydra.models.ResetCredentialsModel import IncorrectCodeException, InvalidCredentials, MailsNotFound, UserNotFound, resetCredentialsModel
 
 
 """
@@ -40,6 +40,16 @@ def input_username_post():
         else:
             logging.warn('error en formulario')
             return render_template('input_username.html', form=form, version=config.version), 400
+
+    except UserNotFound as e:
+        logging.exception(e)
+        """ TODO: por ahora informo el error, cuando walter termine la pantalla la modifico aca """
+        return render_template('error.html', error='Usuario inválido', version=config.version), 400
+
+    except MailsNotFound as e:
+        logging.exception(e)
+        """ TODO: por ahora informo el error, cuando walter termine la pantalla la modifico aca """
+        return render_template('error.html', error='No tiene cuenta de correo configurada', version=config.version), 400
 
     except Exception as e:
         logging.exception(e)
