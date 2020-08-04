@@ -52,9 +52,7 @@ SCOPES = ['https://www.googleapis.com/auth/admin.directory.user']
 FROM = 'sistemas@econo.unlp.edu.ar'
 
 def _get_api(_from):
-    #creds = get_credentials('/src/gitlab/kubernetes/servicios/oidc/login-html/adminecono-173018-66641a886c34.json', _from, SCOPES)
-    #creds = get_credentials('/src/gitlab/kubernetes/servicios/oidc/login-html/adminecono-173018-b77dfc44f95a.json', _from, SCOPES)
-    creds = get_credentials('/src/gitlab/stacks/fce/emails/credentials/credentials.json', _from, SCOPES)
+    creds = get_credentials('/credentials.json', _from, SCOPES)
     api = get_api('admin', 'directory_v1', creds)
     return api
 
