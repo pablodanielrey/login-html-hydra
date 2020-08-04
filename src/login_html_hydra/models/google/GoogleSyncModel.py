@@ -52,7 +52,7 @@ SCOPES = ['https://www.googleapis.com/auth/admin.directory.user']
 FROM = 'sistemas@econo.unlp.edu.ar'
 
 def _get_api(_from):
-    creds = get_credentials('/credentials.json', _from, SCOPES)
+    creds = get_credentials('/credentials/credentials.json', _from, SCOPES)
     api = get_api('admin', 'directory_v1', creds)
     return api
 
