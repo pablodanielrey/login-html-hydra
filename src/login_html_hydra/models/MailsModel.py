@@ -16,6 +16,9 @@ from email.header import Header
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 
+class MailsModelMock:
+    pass
+
 class MailsModel:
     def __init__(self, gmail):
         self.env = Environment(loader=PackageLoader('login_html_hydra.models.templates','.'))

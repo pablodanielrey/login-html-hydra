@@ -13,6 +13,9 @@ import googleapiclient
 
 from login_html_hydra.models.ResetCredentialsModel import InvalidCredentials
 
+class GoogleSyncModelMock:
+    pass
+
 class GoogleSyncModel:
 
     def __init__(self, service):
