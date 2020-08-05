@@ -23,7 +23,7 @@ class ChangeCredentialsModel:
 
         return code
 
-    def change_credentials(sefl, code, creds):
+    def change_credentials(self, code, creds):
         return None
 
 changeCredentialsModel = ChangeCredentialsModel()
