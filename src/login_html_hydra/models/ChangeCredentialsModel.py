@@ -24,6 +24,6 @@ class ChangeCredentialsModel:
         return code
 
     def change_credentials(sefl, code, creds):
-        pass
+        return None
 
 changeCredentialsModel = ChangeCredentialsModel()

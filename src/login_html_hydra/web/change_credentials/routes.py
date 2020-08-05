@@ -27,6 +27,7 @@ def change_credentials_post(code):
             p2 = form.password2_confirmation.data
             if p1 == p2:
                 redirect_url = changeCredentialsModel.change_credentials(code, p1)
+                assert redirect_url is not None
                 return redirect(redirect_url), 302
             else:
                 logging.info(f'claves inválidas')
