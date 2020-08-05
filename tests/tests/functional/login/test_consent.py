@@ -21,7 +21,7 @@ def test_valid_consent_ok(client, config):
 
 def test_invalid_consent(client, config):
     query = {
-        'consent_challenge': config['invalid_challenge']
+        'consent_challenge': config['challenge'] + '1212'
     }
     r = client.get('/consent/', query_string=query)
     assert r.status_code == 400

@@ -40,7 +40,7 @@ def test_valid_login_get(client, config):
     assert challenge in str(r.data)
 
 def test_invalid_login_get(client, config):
-    challenge = config['invalid_challenge']
+    challenge = config['challenge'] + 'qwq'
     query = {
         'login_challenge': challenge
     }
@@ -58,10 +58,10 @@ def test_null_login_post(client):
     assert STRING_DE_ERROR in str(r.data)
 
 def test_null_login_err(client, config):
-    creds = config['credentials_err']
+    creds = config['credentials']
     params = {
-        'username': creds.username,
-        'password': creds.credentials
+        'username': creds.username + '1',
+        'password': creds.credentials + '1'
     }
     r = client.post('/login/', data=params)
     assert r.status_code == 400
@@ -94,7 +94,7 @@ def test_valid_login_required_fail(client, config):
     assert challenge in str(r.data)
 
 def test_invalid_login_required_fail(client, config):
-    challenge = config['invalid_challenge']
+    challenge = config['challenge'] + '1'
     creds = config['credentials']
     params = {
         'username': creds.username,
@@ -108,7 +108,7 @@ def test_valid_login_err(client, config):
     challenge = config['challenge']
     params = {
         'username': config['credentials'].username,
-        'password': config['credentials_err'].credentials,
+        'password': config['credentials'].credentials + 'err',
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
@@ -116,10 +116,10 @@ def test_valid_login_err(client, config):
     assert 'http-equiv=\"Refresh' in str(r.data)
     
 def test_invalid_login_err(client, config):
-    challenge = config['invalid_challenge']
+    challenge = config['challenge']
     params = {
         'username': config['credentials'].username,
-        'password': config['credentials_err'].credentials,
+        'password': config['credentials'].credentials + 'err',
         'challenge': challenge
     }
     r = client.post('/login/', data=params)
@@ -139,7 +139,7 @@ def test_valid_login_ok(client, config):
     assert 'http-equiv=\"Refresh' in str(r.data)
 
 def test_invalid_login_ok(client, config):
-    challenge = config['invalid_challenge']
+    challenge = config['challenge'] + 'err'
     creds = config['credentials']
     params = {
         'username': creds.username,

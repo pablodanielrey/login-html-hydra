@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from login_html_hydra.config import UserEnv, LoginEnv, RedisEnv
 
 @contextlib.contextmanager
-def open_session(dbhost, dbport, dbname, dbuser, dbpassword, echo=True,):
+def open_session(dbhost, dbport, dbname, dbuser, dbpassword, echo=False):
     engine = create_engine(f'postgresql://{dbuser}:{dbpassword}@{dbhost}:{dbport}/{dbname}', echo=echo)
     Session = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
     session = Session()
