@@ -86,7 +86,7 @@ class LoginHydraModel():
         with open_login_session() as lsession:
             login, hash_ = self.loginModel.login(lsession, username, password, '', challenge)
             if login:
-                uid = login.user_id1
+                uid = login.user_id
                 with open_users_session() as usession:
                     users = self.usersModel.get_users(usession, [uid])
                     user = users[0]
