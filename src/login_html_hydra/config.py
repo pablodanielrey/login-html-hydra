@@ -1,6 +1,6 @@
 import os
 
-version = '0.0.4'
+version = '1.1.2'
 
 #CONFIG DE USERS
 class UserEnv:
