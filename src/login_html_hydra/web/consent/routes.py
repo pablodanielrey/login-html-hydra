@@ -1,10 +1,12 @@
 import logging
-logging.getLogger().setLevel(logging.INFO)
+import inject
+
+from login_html_hydra.models.LoginHydraModel import LoginHydraModel
 
 from flask import render_template, flash, redirect,request, Markup, url_for, request
 from . import bp, config
 
-from login_html_hydra.models.LoginHydraModel import loginHydraModel
+loginHydraModel = inject.instance(LoginHydraModel)
 
 @bp.route('/', methods=['GET'])
 def consent():

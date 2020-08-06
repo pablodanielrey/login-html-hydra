@@ -10,6 +10,9 @@ import datetime
 import base64
 import logging
 import os
+import inject
+
+from googleapiclient.discovery import Resource
 
 from email.mime.text import MIMEText
 from email.header import Header
@@ -17,14 +20,19 @@ from email.header import Header
 from jinja2 import Environment, PackageLoader, FileSystemLoader
 
 class MailsModelMock:
-    pass
+    
+    def send_code(code, user, tos=[]):
+        """ retorno algo no nulo """
+        return []
 
 class MailsModel:
-    def __init__(self, gmail):
+
+    @inject.autoparams()
+    def __init__(self, gmail: Resource):
         self.env = Environment(loader=PackageLoader('login_html_hydra.models.templates','.'))
         self.gmail = gmail
 
-    def send_email(self, _from, mail):
+    def _send_email(self, _from, mail):
         urlsafe = base64.urlsafe_b64encode(mail.as_string().encode()).decode()
         r = self.gmail.users().messages().send(userId=_from, body={'raw':urlsafe}).execute()
         return r
@@ -42,28 +50,10 @@ class MailsModel:
             mail['to'] = to
             mail['from'] = _from
             mail['subject'] = Header(subject, 'utf-8')
-            r = self.send_email(_from, mail)
+            r = self._send_email(_from, mail)
             responses.append(r)
         return responses
 
     def _load_code_template(self):
         code_tmpl = self.env.get_template('code.tmpl')
         return code_tmpl
-
-
-
-""" obtengo al api de gmail e instancio el modelo de mails """
-
-from login_html_hydra import config
-from .google.Google import get_credentials, get_api
-
-SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-FROM = 'sistemas@econo.unlp.edu.ar'
-
-def _get_api(_from):
-    path = config.CredentialsEnv.PATH
-    creds = get_credentials(path, _from, SCOPES)
-    api = get_api('gmail', 'v1', creds)     
-    return api
-
-mailsModel = MailsModel(_get_api(FROM))

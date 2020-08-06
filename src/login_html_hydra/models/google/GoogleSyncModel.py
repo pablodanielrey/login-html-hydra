@@ -8,17 +8,29 @@ import datetime
 import uuid
 import logging
 import json
+import inject
 
 import googleapiclient
+from googleapiclient.discovery import Resource
 
-from login_html_hydra.models.ResetCredentialsModel import InvalidCredentials
+from login_html_hydra.models.exceptions import InvalidCredentials
+
+
+class AdminResource(Resource):
+    pass
+
 
 class GoogleSyncModelMock:
-    pass
+
+    def sync_login(self, username, credentials):
+        """ retornamos algo distinto de None """
+        return {}
+
 
 class GoogleSyncModel:
 
-    def __init__(self, service):
+    @inject.autoparams()
+    def __init__(self, service: AdminResource):
         self.service = service
 
     def _get_google_uid(self, username):
@@ -45,20 +57,3 @@ class GoogleSyncModel:
                 raise e
 
         return r
-
-
-""" obtengo al api de gmail e instancio el modelo de mails """
-
-from login_html_hydra import config
-from .Google import get_api, get_credentials
-
-SCOPES = ['https://www.googleapis.com/auth/admin.directory.user']
-FROM = 'sistemas@econo.unlp.edu.ar'
-
-def _get_api(_from):
-    path = config.CredentialsEnv.PATH
-    creds = get_credentials(path, _from, SCOPES)
-    api = get_api('admin', 'directory_v1', creds)
-    return api
-
-googleSyncModel = GoogleSyncModel(_get_api(FROM))    

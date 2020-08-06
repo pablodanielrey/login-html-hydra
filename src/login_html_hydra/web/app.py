@@ -1,3 +1,13 @@
+import inject
+import os
+from login_html_hydra.config import config_dev, config_prod
+
+if os.environ.get('ENVIRONMENT', 'DEV') == 'PROD':
+    inject.configure(config_prod)
+else:
+    inject.configure(config_dev)
+
+
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask
 webapp = Flask(__name__)

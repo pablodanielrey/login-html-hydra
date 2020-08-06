@@ -16,7 +16,6 @@ def open_session(dbhost, dbport, dbname, dbuser, dbpassword, echo=False):
         #session.close()
         engine.dispose()
 
-
 @contextlib.contextmanager
 def open_users_session():
     dbuser = UserEnv.DB_USER

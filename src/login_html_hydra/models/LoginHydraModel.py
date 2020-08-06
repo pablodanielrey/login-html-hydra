@@ -1,13 +1,20 @@
 import logging
+import inject
 
-from .models import hydraApi, loginModel, usersModel
+from login.model.LoginModel import LoginModel
+from users.model.UsersModel import UsersModel
+
+from .HydraApi import HydraApi
 from . import User, Mail, IdentityNumberTypes, MailTypes
 from .db import open_users_session, open_login_session
 
 class LoginHydraModel():
 
-    def __init__(self):
-        pass
+    @inject.autoparams()
+    def __init__(self, hydraApi: HydraApi, loginModel: LoginModel, usersModel: UsersModel):
+        self.hydraApi = hydraApi
+        self.loginModel = loginModel
+        self.usersModel = usersModel
 
     def _get_user_dni(self, user:User):
         for i in user.identity_numbers:
@@ -77,40 +84,38 @@ class LoginHydraModel():
         assert data['skip'] is False
 
         with open_login_session() as lsession:
-            login, hash_ = loginModel.login(lsession, username, password, '', challenge)
+            login, hash_ = self.loginModel.login(lsession, username, password, '', challenge)
             if login:
-                uid = login.user_id
+                uid = login.user_id1
                 with open_users_session() as usession:
-                    users = usersModel.get_users(usession, [uid])
+                    users = self.usersModel.get_users(usession, [uid])
                     user = users[0]
                     context = self._generate_context(user)
-                    data = hydraApi.accept_login_challenge(challenge=challenge, uid=uid, data=context, remember=False)
+                    data = self.hydraApi.accept_login_challenge(challenge=challenge, uid=uid, data=context, remember=False)
                     redirect = data['redirect_to']
                     return redirect
             else:
-                data = hydraApi.deny_login_challenge(challenge=challenge, device_id=None, error='Credenciales incorrectas')
+                data = self.hydraApi.deny_login_challenge(challenge=challenge, device_id=None, error='Credenciales incorrectas')
                 redirect = data['redirect_to']
                 return redirect
 
 
     def accept_login_challenge(self, challenge, uid):
-        data = hydraApi.accept_login_challenge(challenge, uid)
+        data = self.hydraApi.accept_login_challenge(challenge, uid)
         redirect = data['redirect_to']
         return redirect
     
     def get_login_challenge(self, challenge):
-        data = hydraApi.get_login_challenge(challenge)
+        data = self.hydraApi.get_login_challenge(challenge)
         return data
 
     def check_and_accept_consent_challenge(self, challenge):
         """
             https://www.ory.sh/hydra/docs/reference/api/#get-consent-request-information
         """
-        data = hydraApi.get_consent_challenge(challenge)
+        data = self.hydraApi.get_consent_challenge(challenge)
         logging.debug(f'consent: {data}')
         scopes = data['requested_scope']
         context = data['context'] 
-        redirect = hydraApi.accept_consent_challenge(challenge=challenge, scopes=scopes, context=context, remember=False)
+        redirect = self.hydraApi.accept_consent_challenge(challenge=challenge, scopes=scopes, context=context, remember=False)
         return redirect['redirect_to']
-
-loginHydraModel = LoginHydraModel()

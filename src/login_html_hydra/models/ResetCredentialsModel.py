@@ -4,29 +4,21 @@ import json
 import uuid
 import re
 from datetime import timedelta, datetime
+import inject
 
 from . import UserCredentials, MailTypes, User
 from .db import open_login_session, open_users_session, open_redis_session
-from .models import loginModel, usersModel
-
-class IncorrectCodeException(Exception):
-    pass
 
 
-class InvalidCredentials(Exception):
-    pass
+from .MailsModel import MailsModel
+from .google.GoogleSyncModel import GoogleSyncModel
 
-class MailsNotFound(Exception):
-    pass
-
-
-class UserNotFound(Exception):
-    pass
-
+from .exceptions import UserNotFound, IncorrectCodeException, InvalidCredentials, MailsNotFound
 
 class ResetCredentialsModel:
 
-    def __init__(self, mailsModel, googleSyncModel):
+    @inject.autoparams()
+    def __init__(self, mailsModel: MailsModel, googleSyncModel: GoogleSyncModel):
         self.mailsModel = mailsModel
         self.googleSyncModel = googleSyncModel
         self.r = re.compile(r"""^\d+$""")
@@ -148,7 +140,3 @@ class ResetCredentialsModel:
             session.commit()
 
         self.delete_reset_info(ri['id'])
-
-from .MailsModel import mailsModel
-from .google.GoogleSyncModel import googleSyncModel
-resetCredentialsModel = ResetCredentialsModel(mailsModel, googleSyncModel)

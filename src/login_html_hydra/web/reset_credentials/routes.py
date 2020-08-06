@@ -1,12 +1,15 @@
 import logging
+import inject
 
 from flask import render_template, flash, redirect,request, Markup, url_for
 from . import bp, config
 
 from .forms import InputUsername, InputCode, InputCredentials
 
-from login_html_hydra.models.ResetCredentialsModel import IncorrectCodeException, InvalidCredentials, MailsNotFound, UserNotFound, resetCredentialsModel
+from login_html_hydra.models.ResetCredentialsModel import ResetCredentialsModel
+from login_html_hydra.models.exceptions import IncorrectCodeException, InvalidCredentials, MailsNotFound, UserNotFound
 
+resetCredentialsModel = inject.instance(ResetCredentialsModel)
 
 """
     debug 

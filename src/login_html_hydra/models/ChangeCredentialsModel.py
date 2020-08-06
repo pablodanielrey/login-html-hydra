@@ -3,7 +3,7 @@ import uuid
 from datetime import timedelta
 
 from .db import open_login_session, open_users_session, open_redis_session
-from .models import loginModel, usersModel
+
 
 class ChangeCredentialsModel:
 
@@ -25,5 +25,3 @@ class ChangeCredentialsModel:
 
     def change_credentials(self, code, creds):
         return None
-
-changeCredentialsModel = ChangeCredentialsModel()

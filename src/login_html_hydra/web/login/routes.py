@@ -1,12 +1,14 @@
 import logging
-logging.getLogger().setLevel(logging.INFO)
+import inject
+
+from login_html_hydra.models.LoginHydraModel import LoginHydraModel
 
 from flask import render_template, flash, request, Markup, url_for, request, Response
 from . import bp, config
 
 from .forms import LoginForm
 
-from login_html_hydra.models.LoginHydraModel import loginHydraModel
+loginHydraModel = inject.instance(LoginHydraModel)
 
 def _my_redirect(url):
     r = Response(f"<html><head><meta http-equiv=\"Refresh\" content=\"0; URL={url}\"></head><body>redireccionando ... </body></html>")
