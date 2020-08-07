@@ -1,6 +1,6 @@
 import os
 
-version = '1.1.3'
+version = '1.1.4'
 
 #CONFIG DE USERS
 class UserEnv:
@@ -31,7 +31,7 @@ class CredentialsEnv:
     PATH = os.environ.get('CREDENTIALS_PATH', '/credentials/credentials.json')
 
 
-def _get_admin_api(_from, scopes):
+def _get_admin_api():
     from login_html_hydra import config
     from .models.google.Google import get_api, get_credentials
 

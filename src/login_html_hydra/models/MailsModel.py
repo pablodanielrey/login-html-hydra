@@ -21,7 +21,7 @@ from jinja2 import Environment, PackageLoader, FileSystemLoader
 
 class MailsModelMock:
     
-    def send_code(code, user, tos=[]):
+    def send_code(self, code, user, tos=[]):
         """ retorno algo no nulo """
         return []
 
@@ -42,7 +42,7 @@ class MailsModel:
         subject = 'Reseteo de Clave FCE'
         
         code_tmpl = self._load_code_template()
-        body = code_tmpl.render(code=code,user=user)
+        body = code_tmpl.render(code=code, user=user)
 
         responses = []
         for to in tos:
