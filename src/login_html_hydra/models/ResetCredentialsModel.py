@@ -6,6 +6,8 @@ import re
 from datetime import timedelta, datetime
 import inject
 
+from login.model.LoginModel import LoginModel
+
 from . import UserCredentials, MailTypes, User
 from .db import open_login_session, open_users_session, open_redis_session
 
@@ -18,7 +20,8 @@ from .exceptions import UserNotFound, IncorrectCodeException, InvalidCredentials
 class ResetCredentialsModel:
 
     @inject.autoparams()
-    def __init__(self, mailsModel: MailsModel, googleSyncModel: GoogleSyncModel):
+    def __init__(self, mailsModel: MailsModel, googleSyncModel: GoogleSyncModel, loginModel: LoginModel):
+        self.loginModel = loginModel
         self.mailsModel = mailsModel
         self.googleSyncModel = googleSyncModel
         self.r = re.compile(r"""^\d+$""")
@@ -136,7 +139,7 @@ class ResetCredentialsModel:
                 break
 
         with open_login_session() as session:
-            loginModel.change_credentials(session, uid, username, password)
+            self.loginModel.change_credentials(session, uid, username, password)
             session.commit()
 
         self.delete_reset_info(ri['id'])
