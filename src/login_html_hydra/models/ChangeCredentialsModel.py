@@ -3,10 +3,9 @@ import uuid
 from datetime import timedelta
 
 from .db import open_login_session, open_users_session, open_redis_session
-from .models import loginModel, usersModel
+
 
 class ChangeCredentialsModel:
-
 
     def _generate_credentials(self, config):
 
@@ -24,22 +23,5 @@ class ChangeCredentialsModel:
 
         return code
 
-
-    def change_credentials(self, code, credentials):
-        """
-            TODO Ver logitud de contraseña donde agregar y como devolver error
-        """
-        with open_redis_session() as r:
-            data = r.get(code)
-            change = json.loads(data)            
-
-        uid = change['uid']
-        username = change['username']
-        return_url = change['return_url']
-        
-        with open_login_session() as session:
-            loginModel.change_credentials(session, uid, username, credentials)
-        
-        return return_url
-
-changeCredentialsModel = ChangeCredentialsModel()
+    def change_credentials(self, code, creds):
+        return None

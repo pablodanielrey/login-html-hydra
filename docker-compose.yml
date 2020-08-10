@@ -7,6 +7,7 @@ services:
     ports:
     - "10005:10005"
     environment:
+      ENVIRONMENT: DEV
       USERS_DB_USER: users
       USERS_DB_PASSWORD: clavesuperultrarecontrasecreta
       USERS_DB_HOST: 0.0.0.0

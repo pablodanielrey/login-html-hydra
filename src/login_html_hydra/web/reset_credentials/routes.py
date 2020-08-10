@@ -1,22 +1,26 @@
 import logging
+import inject
 
 from flask import render_template, flash, redirect,request, Markup, url_for
 from . import bp, config
 
 from .forms import InputUsername, InputCode, InputCredentials
 
-from login_html_hydra.models.ResetCredentialsModel import resetCredentialsModel
+from login_html_hydra.models.ResetCredentialsModel import ResetCredentialsModel
+from login_html_hydra.models.exceptions import IncorrectCodeException, InvalidCredentials, MailsNotFound, UserNotFound
 
+resetCredentialsModel = inject.instance(ResetCredentialsModel)
 
 """
     debug 
 """
 
+"""
 @bp.route('/debug/<username>', methods=['GET'])
 def debug(username):
     ri = resetCredentialsModel.get_indexed_reset_info(username)
     return render_template('debug.html', ri=ri, version=config.version)
-
+"""
 
 """
     paso 1 -- ingresa su usuario
@@ -40,6 +44,16 @@ def input_username_post():
             logging.warn('error en formulario')
             return render_template('input_username.html', form=form, version=config.version), 400
 
+    except UserNotFound as e:
+        logging.exception(e)
+        """ TODO: por ahora informo el error, cuando walter termine la pantalla la modifico aca """
+        return render_template('error.html', error='Usuario inválido', version=config.version), 400
+
+    except MailsNotFound as e:
+        logging.exception(e)
+        """ TODO: por ahora informo el error, cuando walter termine la pantalla la modifico aca """
+        return render_template('error.html', error='No tiene cuenta de correo configurada', version=config.version), 400
+
     except Exception as e:
         logging.exception(e)
         return render_template('error.html', error='Error de reseteo', version=config.version), 400
@@ -49,19 +63,30 @@ def input_username_post():
 """
     paso 2 - ingresa el código enviado al correo
 """
+def _ofuscate(emails=[]):
+    ofuscated = []
+    for email in emails:
+        parts = email.split('@')
+        if len(parts[0]) > 3:
+            parts[0] = parts[0][:3] + '*'*(len(parts[0])-3)
+        if len(parts[1]) > 5:
+            parts[1] = parts[1][:5] + '*'*(len(parts[1])-5) 
+        ofuscated.append(parts[0] + '@' + parts[1])
+    return ofuscated
 
 @bp.route('/code/<cid>', methods=['GET'])
 def input_code(cid):
     try:
         ri = resetCredentialsModel.get_reset_info(cid)
         emails = ri['mails']
+        oemails = _ofuscate(emails)
 
         form = InputCode()
-        return render_template('input_code.html', form=form, emails=emails, version=config.version)
+        return render_template('input_code.html', form=form, emails=oemails, version=config.version)
 
     except Exception as e:
         logging.exception(e)
-        return render_template('error.html', error='Error de reseteo', version=config.version), 400    
+        return render_template('error.html', error='en el procesamiento de la solicitud', version=config.version), 400    
 
 @bp.route('/code/<cid>', methods=['POST'])
 def input_code_post(cid):
@@ -76,7 +101,12 @@ def input_code_post(cid):
         else:
             ri = resetCredentialsModel.get_reset_info(cid)
             emails = ri['mails']
-            return render_template('input_code.html', form=form, emails=emails, version=config.version)
+            oemails = _ofuscate(emails)
+            return render_template('input_code.html', form=form, emails=oemails, version=config.version)
+
+    except IncorrectCodeException as e:
+        logging.exception(e)
+        return render_template('error.html', error='Código Incorrecto', version=config.version), 400
 
     except Exception as e:
         logging.exception(e)
@@ -109,6 +139,10 @@ def input_credentials_post(cid):
             ri = resetCredentialsModel.get_reset_info(cid)
             emails = ri['mails']
             return render_template('input_code.html', form=form, emails=emails, version=config.version)
+    
+    except InvalidCredentials as e1:
+        logging.exception(e1)
+        return render_template('error.html', error='Credenciales inválidas', version=config.version), 400
 
     except Exception as e:
         logging.exception(e)

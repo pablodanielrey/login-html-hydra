@@ -13,7 +13,7 @@ def test_null_get_login_challenge(hydra_model):
 
 def test_invalid_get_login_challenge(hydra_model, config):
     model = hydra_model
-    challenge = config['invalid_challenge']
+    challenge = config['challenge'] + 'invalid'
     with pytest.raises(Exception):
         model.get_login_challenge(challenge)
     
@@ -42,7 +42,7 @@ def test_null_accept_login_challenge(hydra_model, config):
 
 def test_invalid_accept_login_challenge(hydra_model, config):
     model = hydra_model
-    challenge = config['invalid_challenge']
+    challenge = config['challenge'] + 'invalid'
     with pytest.raises(Exception):
         model.accept_login_challenge(challenge, str(uuid.uuid4()))
     
@@ -74,42 +74,38 @@ def test_login_valid_ok(hydra_model, config):
 def test_login_valid_worng_user(hydra_model, config):
     model = hydra_model
     challenge = config['challenge']
-    creds_ok = config['credentials']
-    creds_err = config['credentials_err']
-    r = model.login(challenge, creds_err.username, creds_ok.credentials)
+    creds = config['credentials']
+    r = model.login(challenge, creds.username + 'invalid', creds.credentials)
     assert r.startswith('http')
     assert 'error' in r
 
 def test_login_valid_wrong_password(hydra_model, config):
     model = hydra_model
     challenge = config['challenge']
-    creds_ok = config['credentials']
-    creds_err = config['credentials_err']
-    r = model.login(challenge, creds_ok.username, creds_err.credentials)
+    creds = config['credentials']
+    r = model.login(challenge, creds.username, creds.credentials + 'invalid')
     assert r.startswith('http')
 
 def test_login_invalid_ok(hydra_model, config):
     model = hydra_model
-    challenge = config['invalid_challenge']
-    creds_ok = config['credentials']
+    challenge = config['challenge']
+    creds = config['credentials']
     with pytest.raises(Exception):
-        r = model.login(challenge, creds_ok.username, creds_ok.credentials)
+        r = model.login(challenge, creds.username, creds.credentials)
     
 def test_login_invalid_worng_user(hydra_model, config):
     model = hydra_model
-    challenge = config['invalid_challenge']
-    creds_ok = config['credentials']
-    creds_err = config['credentials_err']
+    challenge = config['challenge']
+    creds = config['credentials']
     with pytest.raises(Exception):
-        r = model.login(challenge, creds_err.username, creds_ok.credentials)
+        r = model.login(challenge, creds.username + 'invalid', creds.credentials)
 
 def test_login_invalid_wrong_password(hydra_model, config):
     model = hydra_model
-    challenge = config['invalid_challenge']
-    creds_ok = config['credentials']
-    creds_err = config['credentials_err']
+    challenge = config['challenge']
+    creds = config['credentials']
     with pytest.raises(Exception):
-        r = model.login(challenge, creds_ok.username, creds_err.credentials)
+        r = model.login(challenge, creds.username, creds.credentials + 'invalid')
 
 
 """
@@ -129,7 +125,7 @@ def test_check_and_accept_valid_consent(hydra_model, config):
 
 def test_check_and_accept_invalid_consent(hydra_model, config):
     model = hydra_model
-    challenge = config['invalid_challenge']
+    challenge = config['challenge'] + 'invalid'
     with pytest.raises(Exception):
         model.check_and_accept_consent_challenge(challenge)
 

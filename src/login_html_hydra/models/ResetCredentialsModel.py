@@ -2,16 +2,29 @@ import logging
 import redis
 import json
 import uuid
+import re
 from datetime import timedelta, datetime
+import inject
+
+from login.model.LoginModel import LoginModel
 
 from . import UserCredentials, MailTypes, User
 from .db import open_login_session, open_users_session, open_redis_session
-from .models import loginModel, usersModel
+
+
+from .MailsModel import MailsModel
+from .google.GoogleSyncModel import GoogleSyncModel
+
+from .exceptions import UserNotFound, IncorrectCodeException, InvalidCredentials, MailsNotFound
 
 class ResetCredentialsModel:
 
-    def __init__(self, mailsModel):
+    @inject.autoparams()
+    def __init__(self, mailsModel: MailsModel, googleSyncModel: GoogleSyncModel, loginModel: LoginModel):
+        self.loginModel = loginModel
         self.mailsModel = mailsModel
+        self.googleSyncModel = googleSyncModel
+        self.r = re.compile(r"""^\d+$""")
 
     def delete_reset_info(self, rid):
         with open_redis_session() as r:
@@ -40,7 +53,6 @@ class ResetCredentialsModel:
             assert data is not None
             return json.loads(data)
 
-
     def generate_reset_info(self, username):
         try:
             data = self.get_indexed_reset_info(username)
@@ -57,16 +69,21 @@ class ResetCredentialsModel:
                 return json.loads(data)
         """
 
-        types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE]
-        with open_login_session() as session:
-            uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one()
-            uid = uc.user_id
-        with open_users_session() as session:
-            user = session.query(User).filter(User.id == uid).one()
-            confirmed = [m.email for m in user.mails if m.confirmed and m.deleted == None and m.type in types]
+        try:
+            types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE, MailTypes.INSTITUTIONAL]
+            with open_login_session() as session:
+                uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one()
+                uid = uc.user_id
+            with open_users_session() as session:
+                # pylint: disable=no-member
+                user = session.query(User).filter(User.id == uid).one()
+                confirmed = [m.email for m in user.mails if m.confirmed and m.deleted == None and m.type in types]
+                user_data = {'firstname':user.firstname, 'lastname': user.lastname}
+        except Exception as e1:
+            raise UserNotFound()
 
         if len(confirmed) <= 0:
-            raise Exception(f'{username} no tiene cuentas alternativas confirmadas')
+            raise MailsNotFound()
 
         code = str(uuid.uuid4()).replace('-','')[:5]
         rid = str(uuid.uuid4()).replace('-','')
@@ -88,10 +105,13 @@ class ResetCredentialsModel:
             r.setex(reset_code, timeout, value=rid)
             r.setex(rid, timeout, value=data)
 
-
-        r = self.mailsModel.send_code(code, confirmed)
-        """ chequeo que las r esten ok, al menos una y si no se tira una exception """
-
+            try:
+                r = self.mailsModel.send_code(code, user=user_data, tos=confirmed)
+                """ me falta analizar si existe alguna respuesta inválida para el envío de correos """
+                
+            except Exception as e:
+                r.delete(rid)
+                raise e
 
         return reset
 
@@ -101,7 +121,7 @@ class ResetCredentialsModel:
     def verify_code(self, cid, code):
         ri = self.get_reset_info(cid)
         if ri['code'] != code:
-            raise Exception('Código incorrecto')
+            raise IncorrectCodeException('Código incorrecto')
         return ri['reset_code']
 
     def reset_credentials(self, reset_code, password):
@@ -109,12 +129,17 @@ class ResetCredentialsModel:
         uid = ri['uid']
         username = ri['username']
 
+        """ si tiene usuario en google intento cambiar primero las credenciales remotamente """
+        for mail in ri['mails']:
+            if 'econo.unlp.edu.ar' in mail:
+                if not self.r.match(username):
+                    raise Exception('el usuario no cumple con los parámetros establecidos')
+                r = self.googleSyncModel.sync_login(username, password)
+                assert r is not None
+                break
+
         with open_login_session() as session:
-            loginModel.change_credentials(session, uid, username, password)
+            self.loginModel.change_credentials(session, uid, username, password)
             session.commit()
 
         self.delete_reset_info(ri['id'])
-
-
-from .MailsModel import mailsModel
-resetCredentialsModel = ResetCredentialsModel(mailsModel)

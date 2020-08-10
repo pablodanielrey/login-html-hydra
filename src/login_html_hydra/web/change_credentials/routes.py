@@ -1,10 +1,12 @@
 import logging
-logging.getLogger().setLevel(logging.INFO)
+import inject
 
 from flask import render_template, flash, redirect,request, Markup, url_for
 from . import bp, config
 
-from login_html_hydra.models.ChangeCredentialsModel import changeCredentialsModel
+from login_html_hydra.models.ChangeCredentialsModel import ChangeCredentialsModel
+changeCredentialsModel = inject.instance(ChangeCredentialsModel)
+
 from .forms import ChangeCredentialsForm
 
 @bp.route('/<code>', methods=['GET'])
@@ -27,6 +29,7 @@ def change_credentials_post(code):
             p2 = form.password2_confirmation.data
             if p1 == p2:
                 redirect_url = changeCredentialsModel.change_credentials(code, p1)
+                assert redirect_url is not None
                 return redirect(redirect_url), 302
             else:
                 logging.info(f'claves inválidas')
