@@ -1,12 +1,15 @@
+import pytest
 
+def test_get_uid_by_identity_number(config, credentials_model):
 
-def test_get_reset_info(credentials_model_test):
-    model = credentials_model_test
-    model.generate_reset_info()
+    dni = config['user'].dni
 
-def test_reset_credentials(credentials_model_test):
-    model = credentials_model_test
-    model.reset_credentials()
-
-def test_send_email_with_code(credentials_model):
     model = credentials_model
+    user = model._get_uid_by_identity_number(dni)
+    assert user is not None
+
+    user = model._get_uid_by_identity_number(None)
+    assert user is None
+
+    user = model._get_uid_by_identity_number(f"n{dni}a{dni}")
+    assert user is None

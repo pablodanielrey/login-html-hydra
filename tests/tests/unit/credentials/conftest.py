@@ -1,6 +1,14 @@
 import pytest
+import inject
 
 
+@pytest.fixture(scope='module')
+def injector():
+    from login_html_hydra.config import config_dev
+    inject.configure(config_dev)
+    return None
+
+"""
 @pytest.fixture(scope='module')
 def gmail_api():
     return None
@@ -24,7 +32,14 @@ def google_sync_model(google_api):
 @pytest.fixture(scope='module')
 def credentials_model(prepare_dbs, mails_model, google_sync_model):
     from login_html_hydra.models.ResetCredentialsModel import ResetCredentialsModel
-    model = ResetCredentialsModel(mails_model, google_sync_model)
+    model = ResetCredentialsModel(mails_model, google_sync_model)    
+    return model
+"""
+
+@pytest.fixture(scope='module')
+def credentials_model(prepare_dbs, injector):
+    from login_html_hydra.models.ResetCredentialsModel import ResetCredentialsModel
+    model = inject.instance(ResetCredentialsModel)
     return model
 
 @pytest.fixture(scope='module')
@@ -32,7 +47,6 @@ def change_credentials_model(prepare_dbs):
     from login_html_hydra.models.ChangeCredentialsModel import ChangeCredentialsModel
     model = ChangeCredentialsModel()
     return model
-
 
 @pytest.fixture(scope='module')
 def reset_config():

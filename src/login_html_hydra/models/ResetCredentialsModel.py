@@ -8,7 +8,7 @@ import inject
 
 from login.model.LoginModel import LoginModel
 
-from . import UserCredentials, MailTypes, User
+from . import UserCredentials, MailTypes, User, IdentityNumber
 from .db import open_login_session, open_users_session, open_redis_session
 
 
@@ -53,6 +53,22 @@ class ResetCredentialsModel:
             assert data is not None
             return json.loads(data)
 
+    def _get_uid_by_credentials(self, username):
+        with open_login_session() as session:
+            uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one_or_none()
+            if uc:
+                return uc.user_id
+            else:
+                return None
+
+    def _get_uid_by_identity_number(self, username):
+        with open_users_session() as session:
+            idn = session.query(IdentityNumber).filter(IdentityNumber.number == username).one_or_none()
+            if not idn:
+                return None
+            return idn.user_id
+        
+
     def generate_reset_info(self, username):
         try:
             data = self.get_indexed_reset_info(username)
@@ -71,14 +87,21 @@ class ResetCredentialsModel:
 
         try:
             types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE, MailTypes.INSTITUTIONAL]
-            with open_login_session() as session:
-                uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one()
-                uid = uc.user_id
+            uid = self._get_uid_by_credentials(username)
+            if not uid:
+                uid = self._get_uid_by_identity_number(username)
+                if not uid:
+                    raise UserNotFound()
+
+            types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE, MailTypes.INSTITUTIONAL]
             with open_users_session() as session:
                 # pylint: disable=no-member
                 user = session.query(User).filter(User.id == uid).one()
                 confirmed = [m.email for m in user.mails if m.confirmed and m.deleted == None and m.type in types]
                 user_data = {'firstname':user.firstname, 'lastname': user.lastname}
+
+        except UserNotFound as ue:
+            raise ue
         except Exception as e1:
             raise UserNotFound()
 
