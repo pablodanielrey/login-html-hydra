@@ -56,10 +56,9 @@ class ResetCredentialsModel:
     def _get_uid_by_credentials(self, username):
         with open_login_session() as session:
             uc = session.query(UserCredentials).filter(UserCredentials.username == username, UserCredentials.deleted == None).one_or_none()
-            if uc:
-                return uc.user_id
-            else:
+            if not uc:
                 return None
+            return uc.user_id
 
     def _get_uid_by_identity_number(self, username):
         with open_users_session() as session:
@@ -86,7 +85,6 @@ class ResetCredentialsModel:
         """
 
         try:
-            types = [MailTypes.NOTIFICATION, MailTypes.ALTERNATIVE, MailTypes.INSTITUTIONAL]
             uid = self._get_uid_by_credentials(username)
             if not uid:
                 uid = self._get_uid_by_identity_number(username)
